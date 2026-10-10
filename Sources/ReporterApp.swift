@@ -88,7 +88,7 @@ struct ContentView: View {
             Image(systemName: "camera.viewfinder").font(.system(size: 68, weight: .light)).foregroundColor(accent)
             VStack(spacing: 8) {
                 Text(language.text("צלמו את המפגע", "Photograph the issue")).font(.title2.weight(.bold))
-                Text(language.text("התמונה תנותח אוטומטית ותועבר לבדיקה", "The photo is analyzed automatically, then opens for review")).font(.body).foregroundColor(.secondary).multilineTextAlignment(.center)
+                Text(language.text("זיהוי הלוחית יפעל אוטומטית, ואז תיפתח בדיקה", "Plate text is read automatically, then opens for review")).font(.body).foregroundColor(.secondary).multilineTextAlignment(.center)
             }
             if busy { ProgressView(language.text("מנתח במכשיר...", "Analyzing on-device...")) }
             Button { requestCamera() } label: { Label(language.text("צילום תמונה", "Take photo"), systemImage: "camera.fill").font(.headline).frame(maxWidth: .infinity).frame(height: 56) }.foregroundColor(.white).background(accent).cornerRadius(16).disabled(busy)
@@ -146,12 +146,16 @@ struct ContentView: View {
                         detailRow(language.text("מועד הצילום", "Photo time"), value: reportTime, field: .time)
                     }.padding(.horizontal, 14).background(Color(.secondarySystemGroupedBackground)).cornerRadius(14)
                     Text(language.text("סוג הדיווח, המיקום והמועד טרם נותחו בגרסה זו. השלימו ובדקו את הפרטים; זיהוי אינו הוכחה לעבירה.", "Category, location and photo time are not analyzed in this version yet. Complete and verify the details; recognition is not proof of an offence.")).font(.caption).foregroundColor(.secondary)
-                    Button {} label: { Label(language.text("שלח", "Send"), systemImage: "paperplane.fill").font(.headline).frame(maxWidth: .infinity).frame(height: 52) }.foregroundColor(.white).background(Color.gray).cornerRadius(14).disabled(true)
-                    Text(language.text("אין שליחת דיווח בגרסה זו", "No report submission in this version")).font(.footnote.weight(.medium)).foregroundColor(accent)
                     Button(language.text("צילום מחדש", "Retake photo")) { review = false }.frame(minHeight: 44)
                     Text(language.text("התמונה והזיהוי נשארים במכשיר. הפרופיל מוצפן מקומית.", "Photo and recognition stay on-device. Profile is encrypted locally.")).font(.caption).foregroundColor(Color(.secondaryLabel))
                 }.padding(16)
             }.background(Color(.systemGroupedBackground))
+            .safeAreaInset(edge: .bottom) {
+                VStack(spacing: 6) {
+                    Button {} label: { Label(language.text("שלח", "Send"), systemImage: "paperplane.fill").font(.headline).frame(maxWidth: .infinity).frame(height: 48) }.foregroundColor(.white).background(Color.gray).cornerRadius(14).disabled(true)
+                    Text(language.text("אין שליחת דיווח בגרסה זו", "No report submission in this version")).font(.caption.weight(.medium)).foregroundColor(accent)
+                }.padding(.horizontal, 16).padding(.vertical, 8).background(Color(.systemGroupedBackground))
+            }
     }
     private func detailRow(_ title: String, value: String, field: DetailField) -> some View {
         HStack {
