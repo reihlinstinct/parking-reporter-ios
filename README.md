@@ -7,7 +7,7 @@ MIT-licensed, offline-first development preview. Deployment target iOS 15.0, inc
 - Camera or system photo picker, local Apple Vision text recognition.
 - Plate candidates with explicit manual correction. Candidates are not proof.
 - Reporter profile encrypted by CryptoKit AES-GCM with a device-only, when-unlocked Keychain key. Profile file excluded from backup. Explicit delete removes file and key. Photos stay in RAM in this preview.
-- Unsigned simulator build and unit tests on public macOS CI only.
+- Simulator-only ad-hoc-signed build and unit tests on public macOS CI only.
 - Separate pinned-source Tink Objective-C compatibility spike. Not linked to the app. Test-only private keys are generated at run time, never shipped or uploaded as artifacts.
 
 ## Open on a Mac
@@ -18,7 +18,7 @@ CI builds a simulator app, not an installable signed iPhone package. Camera, per
 
 ## Status
 
-Initial code is not a released app. CI and actual screenshot review must pass before the preview is considered ready. The Tink spike initially tests Java-to-Objective-C decryption/signature and tamper rejection against synthetic PRPKG2 framing. It does not prove full report canonicalization, reverse-direction interoperability, safe JPEG decoding, enrollment, transport or municipal submission. Those remain release gates.
+Initial code is not a released app. CI and actual screenshot review must pass before the preview is considered ready. The Tink spike initially tests Java-to-Objective-C decryption/signature and tamper rejection plus Objective-C-to-Java roundtrip against synthetic PRPKG2 fixtures. It does not prove full report canonicalization, safe JPEG decoding, enrollment, transport or municipal submission. Those remain release gates.
 
 ## Crypto sources
 
