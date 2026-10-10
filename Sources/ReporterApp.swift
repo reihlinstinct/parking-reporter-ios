@@ -160,7 +160,13 @@ struct ContentView: View {
                 Text(value.isEmpty ? language.text("נדרש להשלים", "Needs confirmation") : value).font(.subheadline.weight(.medium))
             }
             Spacer()
-            Button { detailEditor = field } label: { Image(systemName: "pencil").frame(width: 44, height: 44) }.accessibilityLabel(language.text("עריכת ", "Edit ")+title)
+            if field == .category {
+                Menu {
+                    ForEach(ReportCategory.allCases) { value in Button(value.title(language)) { category = value } }
+                } label: { Image(systemName: "chevron.down").frame(width: 44, height: 44) }.accessibilityLabel(language.text("תיקון סוג דיווח", "Correct category"))
+            } else {
+                Button { detailEditor = field } label: { Image(systemName: "pencil").frame(width: 44, height: 44) }.accessibilityLabel(language.text("עריכת ", "Edit ")+title)
+            }
         }.frame(minHeight: 56)
     }
     private func requestCamera() {
