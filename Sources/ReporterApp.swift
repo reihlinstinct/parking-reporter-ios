@@ -21,7 +21,8 @@ struct ContentView: View {
     @State private var editing: Bool
     @State private var revision = UUID()
     @State private var review = false
-    @State private var category = ""
+    @State private var category: ReportCategory = .unknown
+    @State private var draft = CategoryReviewDraft()
     @State private var location = ""
     @State private var reportTime = ""
     @State private var detailEditor: DetailField?
@@ -40,6 +41,8 @@ struct ContentView: View {
         _plate = State(initialValue: demo && !uncertain ? "1234567" : "")
         _editing = State(initialValue: demo && uncertain)
         _review = State(initialValue: demo && !args.contains("--preview-capture"))
+        let category: ReportCategory = args.contains("--preview-sign") ? .brokenSign : args.contains("--preview-crosswalk") ? .fadedCrosswalk : demo ? .sidewalkParking : .unknown
+        _category = State(initialValue: category)
     }
     var body: some View {
         NavigationView {
@@ -59,20 +62,32 @@ struct ContentView: View {
             .sheet(item: $detailEditor) { field in
                 NavigationView {
                     Form {
-                        if field == .category { TextField(language.text("סוג דיווח", "Category"), text: $category) }
+                        if field == .category {
+                            Picker(language.text("סוג דיווח", "Category"), selection: $category) {
+                                ForEach(ReportCategory.allCases) { value in Text(value.title(language)).tag(value) }
+                            }
+                        }
                         if field == .location { TextField(language.text("מיקום", "Location"), text: $location) }
                         if field == .time { TextField(language.text("מועד הצילום", "Photo time"), text: $reportTime) }
                     }.navigationTitle(language.text("עריכת פרט", "Edit detail")).toolbar { Button(language.text("סיום", "Done")) { detailEditor = nil } }
                 }.environment(\.layoutDirection, language.direction)
             }
         }.navigationViewStyle(.stack).accentColor(accent).environment(\.layoutDirection, language.direction)
+        .onChange(of: category) { value in
+            draft.select(value)
+            if !value.requiresPlate { plate = ""; editing = false }
+            else { editing = plate.isEmpty || recognition.needsCorrection }
+        }
+        .onChange(of: plate) { draft.correctPlate($0) }
+        .onChange(of: location) { draft.location = $0 }
+        .onChange(of: reportTime) { draft.confirmedTime = $0 }
     }
     private var capturePage: some View {
         VStack(spacing: 24) {
             Spacer()
             Image(systemName: "camera.viewfinder").font(.system(size: 68, weight: .light)).foregroundColor(accent)
             VStack(spacing: 8) {
-                Text(language.text("צלמו את הרכב", "Take a photo")).font(.title2.weight(.bold))
+                Text(language.text("צלמו את המפגע", "Photograph the issue")).font(.title2.weight(.bold))
                 Text(language.text("התמונה תנותח אוטומטית ותועבר לבדיקה", "The photo is analyzed automatically, then opens for review")).font(.body).foregroundColor(.secondary).multilineTextAlignment(.center)
             }
             if busy { ProgressView(language.text("מנתח במכשיר...", "Analyzing on-device...")) }
@@ -104,7 +119,7 @@ struct ContentView: View {
                             }.frame(maxWidth: .infinity).frame(height: 188)
                         }
                     }.background(Color(.secondarySystemGroupedBackground)).cornerRadius(18)
-                    if image != nil {
+                    if image != nil && category.requiresPlate {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack(spacing: 10) {
                                 Image(systemName: editing ? "exclamationmark.triangle.fill" : "checkmark.circle.fill").foregroundColor(editing ? .orange : accent)
@@ -124,7 +139,7 @@ struct ContentView: View {
                     if busy { ProgressView(language.text("מזהה טקסט במכשיר...", "Reading text locally...")) }
                     if !status.isEmpty { Text(status).font(.footnote).foregroundColor(.secondary) }
                     VStack(spacing: 0) {
-                        detailRow(language.text("סוג דיווח", "Category"), value: category, field: .category)
+                        detailRow(language.text("סוג דיווח", "Category"), value: category == .unknown ? "" : category.title(language), field: .category)
                         Divider()
                         detailRow(language.text("מיקום", "Location"), value: location, field: .location)
                         Divider()
@@ -157,7 +172,7 @@ struct ContentView: View {
     private func accept(_ photo: UIImage?) {
         picker = nil
         guard let photo = photo else { return }
-        image = photo; plate = ""; recognition = PlateRecognition(candidates: [], confidence: 0); status = ""; busy = true; category = ""; location = ""; reportTime = ""
+        image = photo; plate = ""; recognition = PlateRecognition(candidates: [], confidence: 0); status = ""; busy = true; category = .unknown; draft = CategoryReviewDraft(); location = ""; reportTime = ""
         let token = UUID(); revision = token
         // Re-render orientation and bound work on older phones. Original review image stays untouched in RAM.
         DispatchQueue.global(qos: .userInitiated).async {
