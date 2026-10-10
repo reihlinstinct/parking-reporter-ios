@@ -1,0 +1,15 @@
+load("@build_bazel_rules_apple//apple:ios.bzl", "ios_unit_test")
+objc_library(
+    name = "tests",
+    testonly = True,
+    srcs = ["InteropTests.m"],
+    data = glob(["generated/*.bin"]),
+    sdk_frameworks = ["XCTest"],
+    deps = ["//Tink:testonly"],
+)
+ios_unit_test(
+    name = "interop_test",
+    minimum_os_version = "15.0",
+    deps = [":tests"],
+    resources = glob(["generated/*.bin"]),
+)
