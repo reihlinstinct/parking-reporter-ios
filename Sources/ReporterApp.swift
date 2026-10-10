@@ -20,6 +20,12 @@ struct ContentView: View {
     @State private var busy = false
     @State private var editing: Bool
     @State private var revision = UUID()
+    @State private var review = false
+    @State private var category = ""
+    @State private var location = ""
+    @State private var reportTime = ""
+    @State private var detailEditor: DetailField?
+    enum DetailField: String, Identifiable { case category, location, time; var id: String { rawValue } }
     @State private var privacy = false
     @State private var showProfile = false
     private let accent = Color(red: 0.07, green: 0.40, blue: 0.42)
@@ -33,9 +39,51 @@ struct ContentView: View {
         _recognition = State(initialValue: PlateRecognition(candidates: demo && !uncertain ? ["1234567"] : [], confidence: demo && !uncertain ? 0.99 : 0))
         _plate = State(initialValue: demo && !uncertain ? "1234567" : "")
         _editing = State(initialValue: demo && uncertain)
+        _review = State(initialValue: demo && !args.contains("--preview-capture"))
     }
     var body: some View {
         NavigationView {
+            Group {
+                if review { reviewPage } else { capturePage }
+            }
+            .navigationTitle(language.text(review ? "בדיקת דיווח" : "דיווח חניה", review ? "Review report" : "Parking Reporter"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button { showProfile = true } label: { Image(systemName: "gearshape").frame(width: 44, height: 44) }.accessibilityLabel(language.text("הגדרות", "Settings"))
+                }
+            }
+            .sheet(item: $picker) { selected in if selected == .camera { CameraPicker(receive: accept) } else { PhotoPicker(receive: accept) } }
+            .sheet(isPresented: $showProfile) { NavigationView { ProfileView(language: language) }.environment(\.layoutDirection, language.direction) }
+            .sheet(isPresented: $privacy) { NavigationView { ScrollView { Text(language.text("תמונות וזיהוי טקסט נשארים במכשיר. שום דיווח לא נשלח. אין SDK אנליטיקה. הפרופיל מוצפן במפתח Keychain למכשיר זה בלבד.", "Photos and text recognition stay on this device. Nothing is submitted. No analytics SDK. Profile uses a device-only Keychain key.")).padding() }.navigationTitle(language.text("פרטיות", "Privacy")) } }
+            .sheet(item: $detailEditor) { field in
+                NavigationView {
+                    Form {
+                        if field == .category { TextField(language.text("סוג דיווח", "Category"), text: $category) }
+                        if field == .location { TextField(language.text("מיקום", "Location"), text: $location) }
+                        if field == .time { TextField(language.text("מועד הצילום", "Photo time"), text: $reportTime) }
+                    }.navigationTitle(language.text("עריכת פרט", "Edit detail")).toolbar { Button(language.text("סיום", "Done")) { detailEditor = nil } }
+                }.environment(\.layoutDirection, language.direction)
+            }
+        }.navigationViewStyle(.stack).accentColor(accent).environment(\.layoutDirection, language.direction)
+    }
+    private var capturePage: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            Image(systemName: "camera.viewfinder").font(.system(size: 68, weight: .light)).foregroundColor(accent)
+            VStack(spacing: 8) {
+                Text(language.text("צלמו את הרכב", "Take a photo")).font(.title2.weight(.bold))
+                Text(language.text("התמונה תנותח אוטומטית ותועבר לבדיקה", "The photo is analyzed automatically, then opens for review")).font(.body).foregroundColor(.secondary).multilineTextAlignment(.center)
+            }
+            if busy { ProgressView(language.text("מנתח במכשיר...", "Analyzing on-device...")) }
+            Button { requestCamera() } label: { Label(language.text("צילום תמונה", "Take photo"), systemImage: "camera.fill").font(.headline).frame(maxWidth: .infinity).frame(height: 56) }.foregroundColor(.white).background(accent).cornerRadius(16).disabled(busy)
+            Button(language.text("או בחרו תמונה קיימת", "Or choose an existing photo")) { picker = .library }.frame(minHeight: 44).disabled(busy)
+            if !status.isEmpty { Text(status).font(.footnote).foregroundColor(.secondary) }
+            Spacer()
+            Text(language.text("ניתוח מקומי בלבד • אין שליחה בגרסת הפיתוח", "Local analysis only • No submission in this preview")).font(.footnote).foregroundColor(.secondary).multilineTextAlignment(.center)
+        }.padding(24).background(Color(.systemGroupedBackground))
+    }
+    private var reviewPage: some View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
@@ -55,12 +103,6 @@ struct ContentView: View {
                                 Text(language.text("הזיהוי נעשה במכשיר בלבד", "Text recognition stays on your device")).font(.subheadline).foregroundColor(.secondary)
                             }.frame(maxWidth: .infinity).frame(height: 188)
                         }
-                        HStack(spacing: 12) {
-                            Button { requestCamera() } label: { Label(language.text("צילום", "Camera"), systemImage: "camera.fill").frame(maxWidth: .infinity).frame(minHeight: 48) }
-                                .buttonStyle(.plain).foregroundColor(.white).background(accent).cornerRadius(12)
-                            Button { picker = .library } label: { Label(language.text("בחירת תמונה", "Choose photo"), systemImage: "photo").frame(maxWidth: .infinity).frame(minHeight: 48) }
-                                .buttonStyle(.plain).foregroundColor(accent).background(accent.opacity(0.08)).cornerRadius(12)
-                        }.padding(12).disabled(busy)
                     }.background(Color(.secondarySystemGroupedBackground)).cornerRadius(18)
                     if image != nil {
                         VStack(alignment: .leading, spacing: 8) {
@@ -81,22 +123,30 @@ struct ContentView: View {
                     }
                     if busy { ProgressView(language.text("מזהה טקסט במכשיר...", "Reading text locally...")) }
                     if !status.isEmpty { Text(status).font(.footnote).foregroundColor(.secondary) }
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(language.text("לפני דיווח", "Before reporting")).font(.headline)
-                        Text(language.text("בדקו את הלוחית והתמונה. זיהוי אינו הוכחה לעבירה.", "Check the plate and photo. Recognition is not proof of an offence.")).font(.subheadline).foregroundColor(.secondary)
-                        Label(language.text("אין שליחת דיווח בגרסה זו", "No report submission in this version"), systemImage: "lock.fill").font(.footnote.weight(.medium)).foregroundColor(accent)
-                    }.padding(16).frame(maxWidth: .infinity, alignment: .leading).background(accent.opacity(0.06)).cornerRadius(14)
-                    Button { showProfile = true } label: {
-                        HStack { Label(language.text("פרטי מדווח", "Reporter profile"), systemImage: "person.crop.circle"); Spacer(); Image(systemName: language == .hebrew ? "chevron.left" : "chevron.right") }.frame(minHeight: 48).padding(.horizontal, 14)
-                    }.buttonStyle(.plain).background(Color(.secondarySystemGroupedBackground)).cornerRadius(14)
+                    VStack(spacing: 0) {
+                        detailRow(language.text("סוג דיווח", "Category"), value: category, field: .category)
+                        Divider()
+                        detailRow(language.text("מיקום", "Location"), value: location, field: .location)
+                        Divider()
+                        detailRow(language.text("מועד הצילום", "Photo time"), value: reportTime, field: .time)
+                    }.padding(.horizontal, 14).background(Color(.secondarySystemGroupedBackground)).cornerRadius(14)
+                    Text(language.text("סוג הדיווח, המיקום והמועד טרם נותחו בגרסה זו. השלימו ובדקו את הפרטים; זיהוי אינו הוכחה לעבירה.", "Category, location and photo time are not analyzed in this version yet. Complete and verify the details; recognition is not proof of an offence.")).font(.caption).foregroundColor(.secondary)
+                    Button {} label: { Label(language.text("שלח", "Send"), systemImage: "paperplane.fill").font(.headline).frame(maxWidth: .infinity).frame(height: 52) }.foregroundColor(.white).background(Color.gray).cornerRadius(14).disabled(true)
+                    Text(language.text("אין שליחת דיווח בגרסה זו", "No report submission in this version")).font(.footnote.weight(.medium)).foregroundColor(accent)
+                    Button(language.text("צילום מחדש", "Retake photo")) { review = false }.frame(minHeight: 44)
                     Text(language.text("התמונה והזיהוי נשארים במכשיר. הפרופיל מוצפן מקומית.", "Photo and recognition stay on-device. Profile is encrypted locally.")).font(.caption).foregroundColor(Color(.secondaryLabel))
                 }.padding(16)
             }.background(Color(.systemGroupedBackground))
-            .navigationTitle(language.text("דיווח חניה", "Parking Reporter")).navigationBarTitleDisplayMode(.inline)
-            .sheet(item: $picker) { selected in if selected == .camera { CameraPicker(receive: accept) } else { PhotoPicker(receive: accept) } }
-            .sheet(isPresented: $showProfile) { NavigationView { ProfileView(language: language) } .environment(\.layoutDirection, language.direction) }
-            .sheet(isPresented: $privacy) { NavigationView { ScrollView { Text(language.text("תמונות וזיהוי טקסט נשארים במכשיר. שום דיווח לא נשלח. אין SDK אנליטיקה. הפרופיל מוצפן במפתח Keychain למכשיר זה בלבד. התמונות אינן נשמרות אחרי סגירת גרסת הפיתוח.", "Photos and text recognition stay on this device. Nothing is submitted. No analytics SDK. The profile is encrypted with a device-only Keychain key. Photos are not saved after closing the preview.")).padding() }.navigationTitle(language.text("פרטיות", "Privacy")) } }
-        }.navigationViewStyle(.stack).accentColor(accent).environment(\.layoutDirection, language.direction)
+    }
+    private func detailRow(_ title: String, value: String, field: DetailField) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title).font(.caption).foregroundColor(.secondary)
+                Text(value.isEmpty ? language.text("נדרש להשלים", "Needs confirmation") : value).font(.subheadline.weight(.medium))
+            }
+            Spacer()
+            Button { detailEditor = field } label: { Image(systemName: "pencil").frame(width: 44, height: 44) }.accessibilityLabel(language.text("עריכת ", "Edit ")+title)
+        }.frame(minHeight: 56)
     }
     private func requestCamera() {
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else { status = language.text("המצלמה אינה זמינה.", "Camera unavailable."); return }
@@ -107,7 +157,7 @@ struct ContentView: View {
     private func accept(_ photo: UIImage?) {
         picker = nil
         guard let photo = photo else { return }
-        image = photo; plate = ""; recognition = PlateRecognition(candidates: [], confidence: 0); status = ""; busy = true
+        image = photo; plate = ""; recognition = PlateRecognition(candidates: [], confidence: 0); status = ""; busy = true; category = ""; location = ""; reportTime = ""
         let token = UUID(); revision = token
         // Re-render orientation and bound work on older phones. Original review image stays untouched in RAM.
         DispatchQueue.global(qos: .userInitiated).async {
@@ -125,7 +175,7 @@ struct ContentView: View {
                 found = PlateRecognition.from((request.results ?? []).compactMap { item in item.topCandidates(1).first.map { ($0.string, $0.confidence) } })
                 if !found.candidates.isEmpty { message = "Choose a candidate and verify it against the photo." }
             } catch { message = "Text recognition failed. Enter the plate manually." }
-            DispatchQueue.main.async { guard revision == token else { return }; recognition = found; plate = found.candidates.count == 1 ? found.candidates[0] : ""; editing = found.needsCorrection; status = found.candidates.isEmpty ? language.text("לא זוהתה לוחית. הקלידו ידנית.", "No plate found. Enter it manually.") : ""; busy = false }
+            DispatchQueue.main.async { guard revision == token else { return }; recognition = found; plate = found.candidates.count == 1 ? found.candidates[0] : ""; editing = found.needsCorrection; status = found.candidates.isEmpty ? language.text("לא זוהתה לוחית. הקלידו ידנית.", "No plate found. Enter it manually.") : ""; busy = false; review = true }
         }
     }
 }
@@ -146,7 +196,7 @@ struct ProfileView: View {
             Button(language.text("שמירה במכשיר", "Save locally")) { do { try store.save(profile); status = language.text("נשמר במכשיר.", "Saved on this device.") } catch { status = language.text("השמירה נכשלה. שום פרט לא נשלח.", "Could not save. No profile was sent.") } }.disabled(!canSave)
             Button(language.text("מחיקת הפרופיל", "Delete local profile"), role: .destructive) { do { try store.delete(); profile = ReporterProfile(); canSave = true; status = language.text("נמחק.", "Deleted.") } catch { status = language.text("מחיקת הפרופיל נכשלה.", "Could not delete the profile.") } }
             Text(status)
-        }.navigationTitle(language.text("פרטי מדווח", "Reporter profile")).onAppear {
+        }.navigationTitle(language.text("הגדרות", "Settings")).navigationBarTitleDisplayMode(.inline).onAppear {
             do { profile = try store.load(); canSave = true } catch { canSave = false; status = language.text("לא ניתן לפתוח את הפרופיל. הוא לא הוחלף. פתחו את נעילת המכשיר ונסו שוב, או מחקו אותו.", "Could not unlock the saved profile. It was not replaced. Unlock this phone and retry, or explicitly delete it.") }
         }
     }
