@@ -1,0 +1,33 @@
+name: ParkingReporter
+options:
+  deploymentTarget:
+    iOS: '15.0'
+settings:
+  base:
+    SWIFT_VERSION: '5.0'
+    IPHONEOS_DEPLOYMENT_TARGET: '15.0'
+    CODE_SIGNING_ALLOWED: NO
+    PRODUCT_BUNDLE_IDENTIFIER: org.sidewalks.ParkingReporter
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_NSCameraUsageDescription: Take a photo for local review. Nothing is submitted.
+    INFOPLIST_KEY_UILaunchScreen_Generation: YES
+    INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+    TARGETED_DEVICE_FAMILY: '1'
+targets:
+  ParkingReporter:
+    type: application
+    platform: iOS
+    sources: [Sources]
+  ParkingReporterTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    dependencies:
+      - target: ParkingReporter
+schemes:
+  ParkingReporter:
+    build:
+      targets:
+        ParkingReporter: all
+    test:
+      targets: [ParkingReporterTests]
