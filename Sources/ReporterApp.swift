@@ -65,17 +65,17 @@ struct ContentView: View {
                     if image != nil {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack(spacing: 10) {
-                                Image(systemName: editing ? "exclamationmark.viewfinder" : "checkmark.viewfinder").foregroundColor(editing ? .orange : accent)
+                                Image(systemName: editing ? "exclamationmark.triangle.fill" : "checkmark.circle.fill").foregroundColor(editing ? .orange : accent)
                                 Text(language.text("לוחית", "Plate")).font(.subheadline.weight(.medium))
                                 if editing {
-                                    TextField(language.text("מספר לוחית", "Plate number"), text: $plate).keyboardType(.numberPad).font(.system(.title3, design: .monospaced)).environment(\.layoutDirection, .leftToRight)
+                                    TextField(language.text("מספר לוחית", "Plate number"), text: $plate).keyboardType(.numberPad).font(.title3).environment(\.layoutDirection, .leftToRight)
                                 } else {
                                     Text(plate).font(.system(.title3, design: .monospaced).weight(.semibold)).environment(\.layoutDirection, .leftToRight)
                                 }
                                 Spacer(minLength: 0)
                                 if !editing { Button { editing = true } label: { Image(systemName: "pencil").frame(width: 44, height: 44) }.accessibilityLabel(language.text("עריכת לוחית", "Edit plate")) }
                             }.frame(minHeight: 48)
-                            if editing { Text(language.text("הזיהוי לא בטוח. בדקו מול התמונה.", "Recognition is uncertain. Check the photo.")).font(.caption).foregroundColor(.secondary) }
+                            if editing { Text(language.text("הזיהוי לא בטוח. בדקו מול התמונה.", "Recognition is uncertain. Check the photo.")).font(.caption).foregroundColor(Color(.secondaryLabel)) }
                             if recognition.candidates.count > 1 { ForEach(recognition.candidates, id: \.self) { value in Button(value) { plate = value }.frame(minHeight: 44) } }
                         }.padding(.horizontal, 14).padding(.vertical, 6).background(Color(.secondarySystemGroupedBackground)).cornerRadius(14)
                     }
@@ -89,7 +89,7 @@ struct ContentView: View {
                     Button { showProfile = true } label: {
                         HStack { Label(language.text("פרטי מדווח", "Reporter profile"), systemImage: "person.crop.circle"); Spacer(); Image(systemName: language == .hebrew ? "chevron.left" : "chevron.right") }.frame(minHeight: 48).padding(.horizontal, 14)
                     }.buttonStyle(.plain).background(Color(.secondarySystemGroupedBackground)).cornerRadius(14)
-                    Text(language.text("התמונה והזיהוי נשארים במכשיר. הפרופיל מוצפן מקומית.", "Photo and recognition stay on-device. Profile is encrypted locally.")).font(.caption).foregroundColor(.secondary)
+                    Text(language.text("התמונה והזיהוי נשארים במכשיר. הפרופיל מוצפן מקומית.", "Photo and recognition stay on-device. Profile is encrypted locally.")).font(.caption).foregroundColor(Color(.secondaryLabel))
                 }.padding(16)
             }.background(Color(.systemGroupedBackground))
             .navigationTitle(language.text("דיווח חניה", "Parking Reporter")).navigationBarTitleDisplayMode(.inline)
@@ -143,11 +143,11 @@ struct ProfileView: View {
             TextField(language.text("טלפון", "Phone"), text: $profile.phone).keyboardType(.phonePad)
             TextField(language.text("תעודת זהות", "ID"), text: $profile.identifier).keyboardType(.numberPad)
             TextField(language.text("דוא״ל", "Email"), text: $profile.email).keyboardType(.emailAddress).textInputAutocapitalization(.never)
-            Button(language.text("שמירה במכשיר", "Save locally")) { do { try store.save(profile); status = "Saved on this device." } catch { status = "Could not save. No profile was sent." } }.disabled(!canSave)
-            Button(language.text("מחיקת הפרופיל", "Delete local profile"), role: .destructive) { do { try store.delete(); profile = ReporterProfile(); canSave = true; status = "Deleted." } catch { status = "Could not delete the profile." } }
+            Button(language.text("שמירה במכשיר", "Save locally")) { do { try store.save(profile); status = language.text("נשמר במכשיר.", "Saved on this device.") } catch { status = language.text("השמירה נכשלה. שום פרט לא נשלח.", "Could not save. No profile was sent.") } }.disabled(!canSave)
+            Button(language.text("מחיקת הפרופיל", "Delete local profile"), role: .destructive) { do { try store.delete(); profile = ReporterProfile(); canSave = true; status = language.text("נמחק.", "Deleted.") } catch { status = language.text("מחיקת הפרופיל נכשלה.", "Could not delete the profile.") } }
             Text(status)
         }.navigationTitle(language.text("פרטי מדווח", "Reporter profile")).onAppear {
-            do { profile = try store.load(); canSave = true } catch { canSave = false; status = "Could not unlock the saved profile. It was not replaced. Unlock this phone and retry, or explicitly delete it." }
+            do { profile = try store.load(); canSave = true } catch { canSave = false; status = language.text("לא ניתן לפתוח את הפרופיל. הוא לא הוחלף. פתחו את נעילת המכשיר ונסו שוב, או מחקו אותו.", "Could not unlock the saved profile. It was not replaced. Unlock this phone and retry, or explicitly delete it.") }
         }
     }
 }
