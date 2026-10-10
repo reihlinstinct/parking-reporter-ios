@@ -128,7 +128,8 @@ struct ContentView: View {
             DispatchQueue.main.async { guard revision == token else { return }; recognition = found; plate = found.candidates.count == 1 ? found.candidates[0] : ""; editing = found.needsCorrection; status = found.candidates.isEmpty ? language.text("לא זוהתה לוחית. הקלידו ידנית.", "No plate found. Enter it manually.") : ""; busy = false }
         }
     }
-}struct ProfileView: View {
+}
+struct ProfileView: View {
     var language: ReviewLanguage = .english
     @State private var profile = ReporterProfile()
     @State private var status = ""
