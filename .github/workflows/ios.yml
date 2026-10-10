@@ -30,10 +30,12 @@ jobs:
           xcrun simctl install "$DEVICE" build/Build/Products/Debug-iphonesimulator/ParkingReporter.app
           mkdir -p build/screens
           for LANG in he en; do
-            for STATE in capture confident uncertain profile; do
+            for STATE in capture confident uncertain sign crosswalk profile; do
               FLAG=""
               if [ "$STATE" = uncertain ]; then FLAG="--preview-uncertain"; fi
               if [ "$STATE" = capture ]; then FLAG="--preview-capture"; fi
+              if [ "$STATE" = sign ]; then FLAG="--preview-sign"; fi
+              if [ "$STATE" = crosswalk ]; then FLAG="--preview-crosswalk"; fi
               if [ "$STATE" = profile ]; then FLAG="--preview-profile"; fi
               xcrun simctl terminate "$DEVICE" org.sidewalks.ParkingReporter || true
               xcrun simctl launch "$DEVICE" org.sidewalks.ParkingReporter "--preview-$LANG" $FLAG
