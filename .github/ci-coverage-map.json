@@ -1,0 +1,7 @@
+{
+  "mappings": [
+    { "pattern": ".github/workflows/**", "checks": ["validate"] },
+    { "pattern": "scripts/**", "checks": ["validate"] },
+    { "pattern": "docs/wiki/**", "checks": ["validate"] }
+  ]
+}
