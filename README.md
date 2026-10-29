@@ -1,4 +1,6 @@
 # parking-reporter-ios
+
+[![signing-safety](https://github.com/reihlinstinct/parking-reporter-ios/actions/workflows/signing-safety.yml/badge.svg)](https://github.com/reihlinstinct/parking-reporter-ios/actions/workflows/signing-safety.yml)
 Offline-first iOS 15 parking report review preview. No live submissions.
 
 ## CI
