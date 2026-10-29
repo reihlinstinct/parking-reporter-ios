@@ -1,0 +1,21 @@
+{
+ "version": 1,
+ "findings": [
+  {
+   "path": ".github/workflows/scorecard.yml",
+   "rule": "job-write",
+   "scope": "analysis",
+   "evidence": "security-events: write",
+   "issue": "https://github.com/reihlinstinct/parking-reporter-ios/issues/23",
+   "reason": "Approved job-scoped SARIF upload to GitHub code scanning; no code or secrets write."
+  },
+  {
+   "path": ".github/workflows/manual-gpg-signing.yml",
+   "rule": "top-level-write",
+   "scope": "workflow",
+   "evidence": "contents: write",
+   "issue": "https://github.com/reihlinstinct/parking-reporter-ios/issues/23",
+   "reason": "Pre-existing workflow-level write permission; tracked for job-level scoping in this issue."
+  }
+ ]
+}
