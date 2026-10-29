@@ -36,6 +36,8 @@ jobs:
           PY
 
   summary:
+    permissions:
+      contents: read
     name: Run summary
     if: always()
     needs: [validate]
