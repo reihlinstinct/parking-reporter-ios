@@ -12,6 +12,8 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
       - run: python3 scripts/check_repository.py
       - run: brew install xcodegen
       - run: xcodegen generate
@@ -42,6 +44,8 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
       - run: brew install bazelisk maven
       - name: Run pinned-source Tink interoperability test
         run: |
