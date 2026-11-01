@@ -13,17 +13,29 @@ struct ReporterProfile: Codable, Equatable {
 enum ProfileError: Error { case keychain(OSStatus), corrupt, missingKey }
 
 struct ProfileStore {
-    private let service = "org.sidewalks.ParkingReporter.profile"
-    private let account = "profile-aes-gcm-v1"
+    private let service: String
+    private let account: String
+    private let filename: String
+
+    // Injectable service/account/filename let security regression tests run
+    // against isolated Keychain items and files; production keeps the defaults.
+    init(service: String = "org.sidewalks.ParkingReporter.profile",
+         account: String = "profile-aes-gcm-v1",
+         filename: String = "reporter-profile-v1.bin") {
+        self.service = service
+        self.account = account
+        self.filename = filename
+    }
+
     private var keyQuery: [String: Any] {
         [kSecClass as String: kSecClassGenericPassword,
          kSecAttrService as String: service, kSecAttrAccount as String: account,
          kSecAttrSynchronizable as String: false]
     }
-    private func location() throws -> URL {
+    func fileURL() throws -> URL {
         let dir = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
                                              appropriateFor: nil, create: true)
-        return dir.appendingPathComponent("reporter-profile-v1.bin")
+        return dir.appendingPathComponent(filename)
     }
     private func key(create: Bool) throws -> SymmetricKey {
         var query = keyQuery
@@ -47,14 +59,14 @@ struct ProfileStore {
     }
     private let context = Data("parking-local-profile-v1".utf8)
     func load() throws -> ReporterProfile {
-        let file = try location()
+        let file = try fileURL()
         guard FileManager.default.fileExists(atPath: file.path) else { return ReporterProfile() }
         let bytes = try Data(contentsOf: file)
         let plain = try AES.GCM.open(AES.GCM.SealedBox(combined: bytes), using: key(create: false), authenticating: context)
         return try JSONDecoder().decode(ReporterProfile.self, from: plain)
     }
     func save(_ profile: ReporterProfile) throws {
-        let file = try location()
+        let file = try fileURL()
         // A missing key must not silently replace a key protecting an existing profile.
         let exists = FileManager.default.fileExists(atPath: file.path)
         let sealed = try AES.GCM.seal(JSONEncoder().encode(profile), using: key(create: !exists), authenticating: context)
@@ -65,7 +77,7 @@ struct ProfileStore {
         try resource.setResourceValues(values)
     }
     func delete() throws {
-        let file = try location()
+        let file = try fileURL()
         if FileManager.default.fileExists(atPath: file.path) { try FileManager.default.removeItem(at: file) }
         let status = SecItemDelete(keyQuery as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else { throw ProfileError.keychain(status) }
