@@ -1,5 +1,7 @@
 # Parking Reporter for iOS
 
+[![signing-safety](https://github.com/reihlinstinct/parking-reporter-ios/actions/workflows/signing-safety.yml/badge.svg)](https://github.com/reihlinstinct/parking-reporter-ios/actions/workflows/signing-safety.yml)
+
 Planned native Swift app for local parking-evidence review on iOS 15 and later.
 No live report submission. MIT licensed.
 
@@ -49,6 +51,10 @@ The manual signing workflow creates an isolated empty test commit; it is not an
 app build or a documentation validation step and should not be dispatched for
 this check. The signing-safety workflow covers changes to its workflow files,
 not general README or app correctness.
+
+## CI
+
+Every workflow ends with a `Run summary` job that writes a summary to the top of the run page: which jobs ran, their result and duration, what was skipped and why, the commits and files the run changed, and which checks cover those changes (`.github/ci-coverage-map.json` declares the coverage; files matching no mapping are flagged). The script is `scripts/ci/run_summary.py`.
 
 ## Contributing
 
