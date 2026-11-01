@@ -2,7 +2,7 @@
 
 The Android source had no checked-in cross-language golden vectors. This spike creates fixed synthetic report/header/JPEG golden bytes and regenerates test-only keys/ciphertexts at run time. No real report or private key is shipped.
 
-Pinned Java Tink 1.23.0 and Objective-C v1.8.0 source commit `72166ba925e693c4004d5099d2d31e10c655e216` use ECIES P256/HKDF SHA256/AES128-GCM and ECDSA P256, with `parking-intake-tink-v1` as context/signature domain. Java-to-ObjC decryption/signature/tamper test passed in CI run 38068752891. New complete synthetic header/JPEG digest and reverse-direction checks are pending CI, not claimed yet.
+Pinned Java Tink 1.23.0 and Objective-C v1.8.0 source commit `72166ba925e693c4004d5099d2d31e10c655e216` use ECIES P256/HKDF SHA256/AES128-GCM and ECDSA P256, with `parking-intake-tink-v1` as context/signature domain. Java-to-ObjC decryption/signature/tamper and the reverse Objective-C-to-Java roundtrip both run in CI on every pull request; a missing reverse output fails the job. The resolved Java tink-1.23.0.jar is verified against the publisher SHA256 before any interop code runs.
 
 The fixed report covers sorted nested keys, Hebrew UTF-8, quote/newline escaping, integer/double representations, exact approval SHA256 and outgoing JPEG SHA256. Objective-C reconstructs canonical bytes and requires equality. It signs and encrypts the same bytes, then Java must decrypt/verify them. Missing reverse output fails the job. Objective-C numeric formatting is restricted to this fixture, not a production canonicalizer.
 
