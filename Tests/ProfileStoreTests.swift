@@ -137,8 +137,14 @@ final class ProfileStoreSecurityTests: XCTestCase {
         let file = try store.fileURL()
         let values = try file.resourceValues(forKeys: [.isExcludedFromBackupKey])
         XCTAssertEqual(values.isExcludedFromBackup, true, "profile file must be excluded from backup")
+        #if targetEnvironment(simulator)
+        // The simulator does not apply data protection classes: the attribute
+        // reads back as nil even though save() writes with .completeFileProtection.
+        // On-device verification is a release gate listed on PR #2.
+        #else
         let attrs = try FileManager.default.attributesOfItem(atPath: file.path)
         XCTAssertEqual(attrs[.protectionKey] as? FileProtectionType, .complete,
                        "profile file must use complete file protection")
+        #endif
     }
 }
