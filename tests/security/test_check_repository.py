@@ -11,10 +11,15 @@ g = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = g
 spec.loader.exec_module(g)
 
-# Tokens are assembled, never literal, so this test file itself stays clean.
-CLASSIC = 'ghs' + '_' + 'A' * 36
-STATELESS = 'ghs' + '_12345_' + 'A' * 100 + '.' + 'B' * 300 + '.' + 'C' * 108
-LONG_STATELESS = 'ghs' + '_12345_' + 'A' * 100 + '.' + 'B' * 300 + '.' + 'C' * 200
+# Tokens are assembled via a function call, never a constant expression, so
+# no complete token is folded into this file's .pyc either.
+def _assemble(*parts):
+    return ''.join(parts)
+
+
+CLASSIC = _assemble('ghs', '_', 'A' * 36)
+STATELESS = _assemble('ghs', '_12345_', 'A' * 100, '.', 'B' * 300, '.', 'C' * 108)
+LONG_STATELESS = _assemble('ghs', '_12345_', 'A' * 100, '.', 'B' * 300, '.', 'C' * 200)
 
 
 class ScanTests(unittest.TestCase):

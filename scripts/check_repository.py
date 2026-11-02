@@ -2,7 +2,7 @@ from pathlib import Path
 import re
 import sys
 
-SKIP_DIRS = ('.git', 'vendor', 'build', 'generated', '__pycache__', '.pytest_cache')
+SKIP_DIRS = ('.git', 'vendor', 'build', 'generated')
 PATTERNS = [
     r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
     # GitHub tokens: classic ghp/gho/ghu/ghs/ghr forms and the stateless
