@@ -1,29 +1,37 @@
 {
- "version": 1,
- "findings": [
-  {
-   "path": ".github/workflows/scorecard.yml",
-   "rule": "job-write",
-   "scope": "analysis",
-   "evidence": "security-events: write",
-   "issue": "https://github.com/reihlinstinct/parking-reporter-ios/issues/23",
-   "reason": "Approved job-scoped SARIF upload to GitHub code scanning; no code or secrets write."
-  },
-  {
-   "path": ".github/workflows/wiki-sync.yml",
-   "rule": "job-write",
-   "scope": "sync",
-   "evidence": "contents: write",
-   "issue": "https://github.com/reihlinstinct/parking-reporter-ios/issues/31",
-   "reason": "Job-scoped write is required to push docs/wiki/ to the repo wiki with GITHUB_TOKEN; push-to-main only, wiki backend only, no PAT."
-  },
-  {
-   "path": ".github/workflows/manual-gpg-signing.yml",
-   "rule": "job-write",
-   "scope": "signing-test",
-   "evidence": "contents: write",
-   "issue": "https://github.com/reihlinstinct/parking-reporter-ios/issues/33",
-   "reason": "Job-scoped write is required to push the isolated empty test branch; workflow-level default is read and the summary job pins read."
-  }
- ]
+  "version": 1,
+  "findings": [
+    {
+      "path": ".github/workflows/scorecard.yml",
+      "rule": "job-write",
+      "scope": "analysis",
+      "evidence": "security-events: write",
+      "issue": "https://github.com/reihlinstinct/parking-reporter-ios/issues/23",
+      "reason": "Approved job-scoped SARIF upload to GitHub code scanning; no code or secrets write."
+    },
+    {
+      "path": ".github/workflows/wiki-sync.yml",
+      "rule": "job-write",
+      "scope": "sync",
+      "evidence": "contents: write",
+      "issue": "https://github.com/reihlinstinct/parking-reporter-ios/issues/31",
+      "reason": "Job-scoped write is required to push docs/wiki/ to the repo wiki with GITHUB_TOKEN; push-to-main only, wiki backend only, no PAT."
+    },
+    {
+      "path": ".github/workflows/manual-gpg-signing.yml",
+      "rule": "job-write",
+      "scope": "signing-test",
+      "evidence": "contents: write",
+      "issue": "https://github.com/reihlinstinct/parking-reporter-ios/issues/33",
+      "reason": "Job-scoped write is required to push the isolated empty test branch; workflow-level default is read and the summary job pins read."
+    },
+    {
+      "path": ".github/workflows/gemini-review.yml",
+      "rule": "job-write",
+      "scope": "gemini-review",
+      "evidence": "pull-requests: write",
+      "issue": "https://github.com/reihlinstinct/gemini-pr-review/issues/1",
+      "reason": "Owner-approved event-driven Gemini PR review; COMMENT-only advisory reviews, idempotent per head SHA. Tracked in reihlinstinct/gemini-pr-review#1."
+    }
+  ]
 }
