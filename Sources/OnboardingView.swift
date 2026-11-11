@@ -29,7 +29,7 @@ struct OnboardingView: View {
             Text(t("firstrun.settings_note")).font(.footnote).foregroundColor(.secondary)
             Spacer()
             Button { step = 1 } label: { Text(t("firstrun.start")).font(.headline).frame(maxWidth: .infinity) }
-                .buttonStyle(.borderedProminent).controlSize(.large)
+                .buttonStyle(.borderedProminent).tint(AppTheme.buttonFill).controlSize(.large)
         }.padding(24)
     }
     private var setup: some View {

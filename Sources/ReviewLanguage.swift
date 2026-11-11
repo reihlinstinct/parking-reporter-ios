@@ -3,9 +3,16 @@ import UIKit
 
 enum ReviewLanguage: String, CaseIterable, Identifiable { case hebrew = "he", english = "en", arabic = "ar", russian = "ru", amharic = "am", french = "fr"
     var id: String { rawValue }
-    // Legacy two-language helper: Hebrew gets the Hebrew string, every other language the English one.
-    // New screens use Localizer keys, which carry all five languages.
-    func text(_ hebrew: String, _ english: String) -> String { self == .hebrew ? hebrew : english }
+    // Hebrew and English come from the call site. Other languages look up the English text in
+    // the UI catalog (Resources/i18n/ui_strings.json); a missing entry shows English, and the
+    // scripts/check_ios_strings.py gate keeps that from happening for shipped screens.
+    func text(_ hebrew: String, _ english: String) -> String {
+        switch self {
+        case .hebrew: return hebrew
+        case .english: return english
+        default: return Localizer.shared.ui(english, self) ?? english
+        }
+    }
     var isRightToLeft: Bool { self == .hebrew || self == .arabic }
     var direction: LayoutDirection { isRightToLeft ? .rightToLeft : .leftToRight }
     var nativeName: String {

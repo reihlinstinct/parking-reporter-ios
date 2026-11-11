@@ -28,23 +28,32 @@ final class AppSettings: ObservableObject {
 
 enum ReporterValidation {
     static func validName(_ value: String) -> Bool { !value.trimmingCharacters(in: .whitespaces).isEmpty }
-    // Israeli mobile or landline, local or +972 form.
+    // Israeli mobile (05x-xxxxxxx, also as +9725xxxxxxxx) or an international number with + and
+    // country code. Landlines and all-zero numbers are rejected, matching the user-facing hint.
     static func validPhone(_ value: String) -> Bool {
-        var digits = value.filter { $0.isNumber }
-        if value.hasPrefix("+972") { digits = "0" + digits.dropFirst(3) }
-        return digits.hasPrefix("0") && (9...10).contains(digits.count)
-    }
-    // Nine digits with the Israeli check digit.
-    static func validID(_ value: String) -> Bool {
-        let digits = value.filter { $0.isNumber }
-        guard digits.count == value.count, (5...9).contains(digits.count) else { return false }
-        let padded = String(repeating: "0", count: 9 - digits.count) + digits
-        let sum = padded.enumerated().reduce(0) { acc, item in
-            var n = Int(String(item.element))! * (item.offset % 2 == 0 ? 1 : 2)
-            if n > 9 { n -= 9 }
-            return acc + n
+        let compact = value.filter { !" -()".contains($0) }
+        guard compact.allSatisfy({ $0 == "+" || ("0"..."9").contains($0) }), compact.filter({ $0 == "+" }).count <= 1 else { return false }
+        if compact.hasPrefix("+") {
+            let digits = String(compact.dropFirst())
+            guard !digits.isEmpty, !digits.hasPrefix("0"), (7...15).contains(digits.count) else { return false }
+            if digits.hasPrefix("972") { return digits.count == 12 && digits.dropFirst(3).hasPrefix("5") }
+            return true
         }
-        return sum % 10 == 0
+        return compact.count == 10 && compact.hasPrefix("05") && Set(compact.dropFirst(2)).count > 1
+    }
+    // Five to nine ASCII digits with the Israeli check digit. ASCII only: other scripts' digits
+    // pass Character.isNumber but must never reach Int conversion.
+    static func validID(_ value: String) -> Bool {
+        let digits = Array(value.utf8)
+        guard (5...9).contains(digits.count), digits.allSatisfy({ $0 >= 48 && $0 <= 57 }) else { return false }
+        let padded = [UInt8](repeating: 48, count: 9 - digits.count) + digits
+        var sum = 0
+        for (index, byte) in padded.enumerated() {
+            var n = Int(byte - 48) * (index % 2 == 0 ? 1 : 2)
+            if n > 9 { n -= 9 }
+            sum += n
+        }
+        return sum % 10 == 0 && sum > 0
     }
     static func validEmail(_ value: String) -> Bool {
         value.isEmpty || value.range(of: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", options: .regularExpression) != nil

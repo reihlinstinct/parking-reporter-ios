@@ -36,10 +36,18 @@ final class AppSettingsTests: XCTestCase {
     }
     func testPhoneValidation() {
         XCTAssertTrue(ReporterValidation.validPhone("0501234567"))
+        XCTAssertTrue(ReporterValidation.validPhone("050-123-4567"))
         XCTAssertTrue(ReporterValidation.validPhone("+972501234567"))
-        XCTAssertTrue(ReporterValidation.validPhone("02-6234567"))
+        XCTAssertTrue(ReporterValidation.validPhone("+33612345678"))
+        XCTAssertTrue(ReporterValidation.validPhone("+1 (415) 555-2671"))
+        XCTAssertFalse(ReporterValidation.validPhone("02-6234567"), "landline")
+        XCTAssertFalse(ReporterValidation.validPhone("0000000000"))
+        XCTAssertFalse(ReporterValidation.validPhone("0500000000"), "repeated digits")
+        XCTAssertFalse(ReporterValidation.validPhone("+0000000000"))
+        XCTAssertFalse(ReporterValidation.validPhone("+97221234567"), "Israeli landline in +972 form")
         XCTAssertFalse(ReporterValidation.validPhone("12345"))
         XCTAssertFalse(ReporterValidation.validPhone(""))
+        XCTAssertFalse(ReporterValidation.validPhone("05012345ab"))
     }
     func testIsraeliIDChecksum() {
         XCTAssertTrue(ReporterValidation.validID("000000018"))
@@ -48,6 +56,13 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertFalse(ReporterValidation.validID("000000019"))
         XCTAssertFalse(ReporterValidation.validID("12a456789"))
         XCTAssertFalse(ReporterValidation.validID(""))
+        XCTAssertFalse(ReporterValidation.validID("000000000"))
+    }
+    func testNonASCIIDigitsAreRejectedWithoutCrashing() {
+        XCTAssertFalse(ReporterValidation.validID("١٢٣٤٥٦٧٨٩"), "Arabic-Indic digits")
+        XCTAssertFalse(ReporterValidation.validID("१२३४५६७८९"), "Devanagari digits")
+        XCTAssertFalse(ReporterValidation.validID("１２３４５６７８９"), "fullwidth digits")
+        XCTAssertFalse(ReporterValidation.validPhone("٠٥٠١٢٣٤٥٦٧"))
     }
     func testEmailAndName() {
         XCTAssertTrue(ReporterValidation.validEmail(""))

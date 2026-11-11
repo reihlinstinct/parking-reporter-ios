@@ -63,4 +63,20 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(ReviewLanguage.allCases.filter { $0.isRightToLeft }.map { $0.rawValue }.sorted(), ["ar", "he"])
         XCTAssertEqual(ReviewLanguage.french.direction, .leftToRight)
     }
+    func testUICatalogCoversOtherLanguages() {
+        for language in [ReviewLanguage.french, .arabic, .russian, .amharic] {
+            XCTAssertEqual(language.text("הגדרות", "Settings"), loc.ui("Settings", language))
+            XCTAssertNotEqual(language.text("הגדרות", "Settings"), "Settings", "\(language.rawValue) fell back to English")
+        }
+        XCTAssertEqual(ReviewLanguage.hebrew.text("הגדרות", "Settings"), "הגדרות")
+        XCTAssertEqual(ReviewLanguage.english.text("הגדרות", "Settings"), "Settings")
+        XCTAssertEqual(ReviewLanguage.french.text("x", "Unlisted text"), "Unlisted text")
+    }
+    func testCategoryTitlesTranslated() {
+        for language in [ReviewLanguage.french, .arabic, .russian, .amharic] {
+            for category in ReportCategory.allCases {
+                XCTAssertNotEqual(category.title(language), category.title(.english), "\(language.rawValue) \(category)")
+            }
+        }
+    }
 }

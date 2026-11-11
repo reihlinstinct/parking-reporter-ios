@@ -7,11 +7,17 @@ private final class BundleToken {}
 struct Localizer {
     typealias Table = [String: [String: Any]]
     let table: Table
+    private let uiTable: [String: [String: String]]
 
     static let shared = Localizer(bundle: Bundle(for: BundleToken.self))
 
-    init(table: Table) { self.table = table }
+    init(table: Table, ui: [String: [String: String]] = [:]) { self.table = table; self.uiTable = ui }
+    func ui(_ english: String, _ language: ReviewLanguage) -> String? { uiTable[english]?[language.rawValue] }
     init(bundle: Bundle) {
+        if let url = bundle.url(forResource: "ui_strings", withExtension: "json"),
+           let data = try? Data(contentsOf: url),
+           let root = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+           let strings = root["strings"] as? [String: [String: String]] { uiTable = strings } else { uiTable = [:] }
         guard let url = bundle.url(forResource: "strings", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let root = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
