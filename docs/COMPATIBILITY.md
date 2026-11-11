@@ -7,6 +7,10 @@ CI runs the full unit and UI test suite on simulators (workflow `iOS compatibili
 the oldest and newest iOS runtime preinstalled on the macos-15 image, and the newest on the
 macos-26 image. All three jobs block the PR.
 
+Required status checks on `main`: `preview` (iOS preview) and the three matrix jobs `compat (macos-15, oldest, macos15-oldest)`, `compat (macos-15, newest, macos15-newest)` and `compat (macos-26, newest, macos26-newest)`. The owner approved this.
+
+macos-26 note: the newest-runtime job depends on GitHub keeping the `macos-26` runner label. If GitHub retires or renames it, that job fails and blocks merges until the label in `.github/workflows/ios-compat.yml` is updated (one line, plus this required-check name). It costs nothing on this public repo. There is no iOS 27 runner image yet.
+
 No iOS 15.0 simulator is run. The free runner images do not ship that runtime, and the
 workflow does not download runtimes, because a download has no pin or checksum to verify.
 The iOS 15.0 baseline is enforced three other ways instead:
