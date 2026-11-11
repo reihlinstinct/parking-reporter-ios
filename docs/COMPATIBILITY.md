@@ -7,12 +7,18 @@ CI runs the full unit and UI test suite on simulators (workflow `iOS compatibili
 the oldest and newest iOS runtime preinstalled on the macos-15 image, and the newest on the
 macos-26 image. All three jobs block the PR.
 
+Intended required status checks on `main`: `preview` (iOS preview) and the three matrix jobs `compat (macos-15, oldest, macos15-oldest)`, `compat (macos-15, newest, macos15-newest)` and `compat (macos-26, newest, macos26-newest)`. They are configured by the owner in the repository rules. This file does not apply or verify them.
+
+macos-26 note: the newest-runtime job depends on GitHub keeping the `macos-26` runner label. If GitHub retires or renames it, that job fails and blocks merges until the label in `.github/workflows/ios-compat.yml` is updated (one line, plus this required-check name). It costs nothing on this public repo. There is no iOS 27 runner image yet.
+
 No iOS 15.0 simulator is run. The free runner images do not ship that runtime, and the
 workflow does not download runtimes, because a download has no pin or checksum to verify.
 The iOS 15.0 baseline is enforced three other ways instead:
 - the deployment target is 15.0, so the compiler rejects any newer API without `#available`
 - a CI step checks that the built app declares `MinimumOSVersion` 15.0
 - the Camera, permissions and performance check on a real iPhone 6s (below)
+
+iOS 15 (the 15.0 deployment target and its guards) can be verified only by a manual check on a real device (the owner's iPhone 6s). No result of such a check is recorded here, and CI does not cover iOS 15. Whether to keep the 15 floor is an owner decision that is not recorded in this repository.
 
 The runtimes the matrix actually used are printed at the top of each job log.
 
