@@ -74,7 +74,7 @@ struct ContentView: View {
             }
         }.navigationViewStyle(.stack).accentColor(accent).environment(\.layoutDirection, language.direction)
         .onChange(of: category) { value in
-            draft.select(value)
+            draft.select(value, screenPlate: plate)
             if !value.requiresPlate { plate = ""; editing = false }
             else { editing = plate.isEmpty || recognition.needsCorrection }
         }

@@ -23,6 +23,12 @@ struct CategoryReviewDraft: Equatable, Codable {
         self.category = category
         if !category.requiresPlate { plate = nil }
     }
+    // Category change from the UI: a plate already on screen (for example recognized from the
+    // photo while the category was still unknown) must reach the draft once the category needs it.
+    mutating func select(_ category: ReportCategory, screenPlate: String) {
+        select(category)
+        if category.requiresPlate && !screenPlate.isEmpty { correctPlate(screenPlate) }
+    }
     // Automatic classifier suggestions must use the same category/field transition.
     mutating func suggest(_ category: ReportCategory) { select(category) }
     mutating func correctPlate(_ value: String) { plate = category.requiresPlate ? value : nil }

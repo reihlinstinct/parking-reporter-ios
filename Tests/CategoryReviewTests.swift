@@ -16,4 +16,19 @@ final class CategoryReviewTests: XCTestCase {
         draft.suggest(.fadedCrosswalk); XCTAssertNil(draft.plate)
         draft.suggest(.sidewalkParking); XCTAssertNil(draft.plate)
     }
+    func testRecognizedPlateReachesDraftWhenCategoryStartsRequiringIt() {
+        // Real photo flow: the plate is recognized while the category is still unknown.
+        var draft = CategoryReviewDraft()
+        draft.correctPlate("1234567")
+        XCTAssertNil(draft.plate)
+        draft.select(.sidewalkParking, screenPlate: "1234567")
+        XCTAssertEqual(draft.plate, "1234567")
+    }
+    func testScreenPlateIsDroppedForCategoriesWithoutPlate() {
+        var draft = CategoryReviewDraft()
+        draft.select(.brokenSign, screenPlate: "1234567")
+        XCTAssertNil(draft.plate)
+        draft.select(.sidewalkParking, screenPlate: "")
+        XCTAssertNil(draft.plate)
+    }
 }

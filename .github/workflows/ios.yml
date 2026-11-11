@@ -56,7 +56,7 @@ jobs:
             build/screens/
           retention-days: 7
   tink-interop:
-    if: github.event.repository.private == false && github.head_ref != 'feat/compact-rtl-design'
+    if: github.event.repository.private == false
     runs-on: macos-15
     timeout-minutes: 35
     steps:
