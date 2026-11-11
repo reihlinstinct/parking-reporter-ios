@@ -48,6 +48,24 @@ enum AppTheme {
             ? UIColor(red: 0xA3 / 255, green: 0xC9 / 255, blue: 0xF5 / 255, alpha: 1)
             : UIColor(red: 0x2C / 255, green: 0x53 / 255, blue: 0x7E / 255, alpha: 1)
     })
+    // Fill behind white button text. Navy in both modes, because the dark-mode accent is light
+    // (it suits text and icons on dark surfaces, but white text on it measures about 1.7:1).
+    static let buttonFillUI = UIColor(red: 0x2C / 255, green: 0x53 / 255, blue: 0x7E / 255, alpha: 1)
+    static let buttonFill = Color(buttonFillUI)
+}
+
+enum Contrast {
+    // WCAG 2.x contrast ratio between two sRGB colours.
+    static func ratio(_ a: UIColor, _ b: UIColor) -> Double {
+        let la = luminance(a), lb = luminance(b)
+        return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
+    }
+    static func luminance(_ color: UIColor) -> Double {
+        var r: CGFloat = 0, g: CGFloat = 0, bl: CGFloat = 0, al: CGFloat = 0
+        color.getRed(&r, green: &g, blue: &bl, alpha: &al)
+        func lin(_ c: CGFloat) -> Double { let v = Double(c); return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4) }
+        return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(bl)
+    }
 }
 
 enum ReportTimeFormat {

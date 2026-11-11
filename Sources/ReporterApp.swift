@@ -84,7 +84,7 @@ struct ContentView: View {
                 Text(language.text("זיהוי הלוחית יפעל אוטומטית, ואז תיפתח בדיקה", "Plate text is read automatically, then opens for review")).font(.body).foregroundColor(.secondary).multilineTextAlignment(.center)
             }
             if busy { ProgressView(language.text("מנתח במכשיר...", "Analyzing on-device...")) }
-            Button { requestCamera() } label: { Label(language.text("צילום תמונה", "Take photo"), systemImage: "camera.fill").font(.headline).frame(maxWidth: .infinity) }.buttonStyle(.borderedProminent).controlSize(.large).disabled(busy)
+            Button { requestCamera() } label: { Label(language.text("צילום תמונה", "Take photo"), systemImage: "camera.fill").font(.headline).frame(maxWidth: .infinity) }.buttonStyle(.borderedProminent).tint(AppTheme.buttonFill).controlSize(.large).disabled(busy)
             Button(language.text("או בחרו תמונה קיימת", "Or choose an existing photo")) { picker = .library }.frame(minHeight: 44).disabled(busy)
             if !status.isEmpty { Text(status).font(.footnote).foregroundColor(.secondary) }
             Spacer()

@@ -47,6 +47,20 @@ jobs:
               xcrun simctl io "$DEVICE" screenshot "build/screens/$LANG-$STATE.png"
             done
           done
+          xcrun simctl ui "$DEVICE" appearance dark
+          for LANG in he en; do
+            for STATE in capture confident history settings; do
+              FLAG=""
+              if [ "$STATE" = capture ]; then FLAG="--preview-capture"; fi
+              if [ "$STATE" = history ]; then FLAG="--preview-history"; fi
+              if [ "$STATE" = settings ]; then FLAG="--preview-settings"; fi
+              xcrun simctl terminate "$DEVICE" org.sidewalks.ParkingReporter || true
+              xcrun simctl launch "$DEVICE" org.sidewalks.ParkingReporter "--preview-$LANG" $FLAG
+              sleep 2
+              xcrun simctl io "$DEVICE" screenshot "build/screens/dark-$LANG-$STATE.png"
+            done
+          done
+          xcrun simctl ui "$DEVICE" appearance light
           xcrun simctl shutdown "$DEVICE"
           xcrun simctl delete "$DEVICE"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
