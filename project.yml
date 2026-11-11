@@ -19,7 +19,7 @@ targets:
   ParkingReporter:
     type: application
     platform: iOS
-    sources: [Sources]
+    sources: [Sources, Resources]
   ParkingReporterTests:
     type: bundle.unit-test
     platform: iOS

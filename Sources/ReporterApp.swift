@@ -5,7 +5,7 @@ import AVFoundation
 @main struct ReporterApp: App {
     var body: some Scene { WindowGroup {
         if ProcessInfo.processInfo.arguments.contains("--preview-profile") {
-            let language: ReviewLanguage = ProcessInfo.processInfo.arguments.contains("--preview-he") ? .hebrew : .english
+            let language = ReviewLanguage.resolve(arguments: ProcessInfo.processInfo.arguments, preferred: Locale.preferredLanguages)
             NavigationView { ProfileView(language: language) }.environment(\.layoutDirection, language.direction)
         } else { RootTabView() }
     } }
@@ -30,10 +30,10 @@ struct ContentView: View {
     @State private var privacy = false
     private let accent = AppTheme.accent
     enum PickerKind: String, Identifiable { case camera, library; var id: String { rawValue } }
-    init() {
+    init(language: ReviewLanguage) {
         let args = ProcessInfo.processInfo.arguments
-        language = args.contains("--preview-en") ? .english : (Locale.preferredLanguages.first?.hasPrefix("he") == true || args.contains("--preview-he") ? .hebrew : .english)
-        let demo = args.contains("--preview-he") || args.contains("--preview-en")
+        self.language = language
+        let demo = ReviewLanguage.allCases.contains { args.contains("--preview-\($0.rawValue)") }
         let uncertain = args.contains("--preview-uncertain")
         _image = State(initialValue: demo ? ReviewPreview.image() : nil)
         _recognition = State(initialValue: PlateRecognition(candidates: demo && !uncertain ? ["1234567"] : [], confidence: demo && !uncertain ? 0.99 : 0))
@@ -203,16 +203,22 @@ struct ProfileView: View {
     @State private var status = ""
     @State private var canSave = false
     private let store = ProfileStore()
+    private var profileValid: Bool {
+        ReporterValidation.validName(profile.first) && ReporterValidation.validName(profile.last)
+            && ReporterValidation.validPhone(profile.phone) && ReporterValidation.validID(profile.identifier)
+            && ReporterValidation.validEmail(profile.email)
+    }
     var body: some View {
         Form {
             Text(language.text("הפרופיל מוצפן ונשמר רק במכשיר זה, ללא סנכרון. למחיקה מלאה השתמשו בכפתור המחיקה.", "Encrypted on this device only, not synced. Use Delete to remove both the profile and its Keychain key."))
             TextField(language.text("שם פרטי", "First name"), text: $profile.first).disableAutocorrection(true).textContentType(nil)
             TextField(language.text("שם משפחה", "Last name"), text: $profile.last).disableAutocorrection(true).textContentType(nil)
             TextField(language.text("טלפון", "Phone"), text: $profile.phone).disableAutocorrection(true).textContentType(nil).keyboardType(.phonePad)
-            TextField(language.text("תעודת זהות", "ID"), text: $profile.identifier).disableAutocorrection(true).textContentType(nil).keyboardType(.numberPad)
+            SecureField(language.text("תעודת זהות", "ID"), text: $profile.identifier).disableAutocorrection(true).textContentType(nil).keyboardType(.numberPad)
             TextField(language.text("דוא״ל", "Email"), text: $profile.email).disableAutocorrection(true).textContentType(nil).keyboardType(.emailAddress).textInputAutocapitalization(.never)
-            Button(language.text("שמירה במכשיר", "Save locally")) { do { try store.save(profile); status = language.text("נשמר במכשיר.", "Saved on this device.") } catch { status = language.text("השמירה נכשלה. שום פרט לא נשלח.", "Could not save. No profile was sent.") } }.disabled(!canSave)
+            Button(language.text("שמירה במכשיר", "Save locally")) { do { try store.save(ReporterValidation.normalized(profile)); status = language.text("נשמר במכשיר.", "Saved on this device.") } catch { status = language.text("השמירה נכשלה. שום פרט לא נשלח.", "Could not save. No profile was sent.") } }.disabled(!canSave || !profileValid)
             Button(language.text("מחיקת הפרופיל", "Delete local profile"), role: .destructive) { do { try store.delete(); profile = ReporterProfile(); canSave = true; status = language.text("נמחק.", "Deleted.") } catch { status = language.text("מחיקת הפרופיל נכשלה.", "Could not delete the profile.") } }
+            if !profileValid && canSave { Text(language.text("יש להשלים שם, טלפון נייד או מספר בינלאומי, ותעודת זהות תקינה כדי לשמור.", "Enter a name, a mobile or international phone number and a valid ID to save.")).font(.footnote).foregroundColor(.secondary) }
             Text(status)
         }.navigationTitle(language.text("הגדרות", "Settings")).navigationBarTitleDisplayMode(.inline).onAppear {
             do { profile = try store.load(); canSave = true } catch { canSave = false; status = language.text("לא ניתן לפתוח את הפרופיל. הוא לא הוחלף. פתחו את נעילת המכשיר ונסו שוב, או מחקו אותו.", "Could not unlock the saved profile. It was not replaced. Unlock this phone and retry, or explicitly delete it.") }

@@ -1,0 +1,377 @@
+{
+  "comment": "UI strings that sit next to Hebrew and English in code, keyed by the English text. fr/ar/ru/am are machine-translated drafts and need native review.",
+  "strings": {
+    "About": {
+      "fr": "À propos",
+      "ar": "حول",
+      "ru": "О приложении",
+      "am": "ስለ"
+    },
+    "Analyzing on-device...": {
+      "fr": "Analyse sur l'appareil…",
+      "ar": "جارٍ التحليل على الجهاز...",
+      "ru": "Анализ на устройстве...",
+      "am": "በመሣሪያው ላይ በመተንተን ላይ..."
+    },
+    "Broken traffic sign": {
+      "fr": "Panneau de signalisation cassé",
+      "ar": "لافتة مرور مكسورة",
+      "ru": "Сломанный дорожный знак",
+      "am": "የተሰበረ የትራፊክ ምልክት"
+    },
+    "Camera permission denied. Choose a photo instead.": {
+      "fr": "Autorisation de la caméra refusée. Choisissez plutôt une photo.",
+      "ar": "تم رفض إذن الكاميرا. اختر صورة بدلاً من ذلك.",
+      "ru": "Доступ к камере запрещён. Выберите фото.",
+      "am": "የካሜራ ፈቃድ ተከልክሏል። በምትኩ ፎቶ ይምረጡ።"
+    },
+    "Camera unavailable.": {
+      "fr": "La caméra n'est pas disponible.",
+      "ar": "الكاميرا غير متاحة.",
+      "ru": "Камера недоступна.",
+      "am": "ካሜራ አይገኝም።"
+    },
+    "Category": {
+      "fr": "Catégorie",
+      "ar": "الفئة",
+      "ru": "Категория",
+      "am": "ምድብ"
+    },
+    "Category, location and photo time are not analyzed in this version yet. Complete and verify the details; recognition is not proof of an offence.": {
+      "fr": "La catégorie, le lieu et l'heure de la photo ne sont pas encore analysés dans cette version. Complétez et vérifiez les informations ; une reconnaissance n'est pas une preuve d'infraction.",
+      "ar": "لا يتم تحليل الفئة والموقع ووقت الصورة في هذا الإصدار بعد. أكمل التفاصيل وتحقق منها؛ التعرف ليس دليلاً على مخالفة.",
+      "ru": "Категория, место и время фото в этой версии пока не анализируются. Заполните и проверьте данные; распознавание не доказывает нарушение.",
+      "am": "ምድብ፣ ቦታ እና የፎቶ ሰዓት በዚህ ስሪት ገና አልተተነተኑም። ዝርዝሮቹን ይሙሉ እና ያረጋግጡ፤ ማወቅ የጥሰት ማስረጃ አይደለም።"
+    },
+    "Correct category": {
+      "fr": "Corriger la catégorie",
+      "ar": "تصحيح الفئة",
+      "ru": "Исправить категорию",
+      "am": "ምድብ አስተካክል"
+    },
+    "Could not delete the profile.": {
+      "fr": "Le profil n'a pas pu être supprimé.",
+      "ar": "تعذر حذف الملف الشخصي.",
+      "ru": "Не удалось удалить профиль.",
+      "am": "መገለጫውን መሰረዝ አልተቻለም።"
+    },
+    "Could not save. No profile was sent.": {
+      "fr": "L'enregistrement a échoué. Aucun profil n'a été envoyé.",
+      "ar": "تعذر الحفظ. لم يتم إرسال أي ملف شخصي.",
+      "ru": "Не удалось сохранить. Профиль не отправлялся.",
+      "am": "ማስቀመጥ አልተቻለም። ምንም መገለጫ አልተላከም።"
+    },
+    "Could not unlock the saved profile. It was not replaced. Unlock this phone and retry, or explicitly delete it.": {
+      "fr": "Le profil enregistré n'a pas pu être déverrouillé. Il n'a pas été remplacé. Déverrouillez ce téléphone et réessayez, ou supprimez-le explicitement.",
+      "ar": "تعذر فتح الملف الشخصي المحفوظ. لم يتم استبداله. افتح قفل الهاتف وأعد المحاولة، أو احذفه صراحةً.",
+      "ru": "Не удалось открыть сохранённый профиль. Он не был заменён. Разблокируйте телефон и повторите или удалите его явно.",
+      "am": "የተቀመጠውን መገለጫ መክፈት አልተቻለም። አልተተካም። ስልኩን ከፍተው እንደገና ይሞክሩ፣ ወይም በግልፅ ይሰርዙት።"
+    },
+    "Delete local profile": {
+      "fr": "Supprimer le profil local",
+      "ar": "حذف الملف الشخصي المحلي",
+      "ru": "Удалить локальный профиль",
+      "am": "የአካባቢ መገለጫን ሰርዝ"
+    },
+    "Deleted.": {
+      "fr": "Supprimé.",
+      "ar": "تم الحذف.",
+      "ru": "Удалено.",
+      "am": "ተሰርዟል።"
+    },
+    "Development preview": {
+      "fr": "Aperçu de développement",
+      "ar": "معاينة التطوير",
+      "ru": "Версия для разработки",
+      "am": "የልማት ቅድመ እይታ"
+    },
+    "Done": {
+      "fr": "Terminé",
+      "ar": "تم",
+      "ru": "Готово",
+      "am": "ተጠናቋል"
+    },
+    "Drafts": {
+      "fr": "Brouillons",
+      "ar": "المسودات",
+      "ru": "Черновики",
+      "am": "ረቂቆች"
+    },
+    "Edit ": {
+      "fr": "Modifier ",
+      "ar": "تعديل ",
+      "ru": "Изменить ",
+      "am": "አርትዕ "
+    },
+    "Edit detail": {
+      "fr": "Modifier le détail",
+      "ar": "تعديل التفصيل",
+      "ru": "Изменить данные",
+      "am": "ዝርዝር አርትዕ"
+    },
+    "Edit plate": {
+      "fr": "Modifier la plaque",
+      "ar": "تعديل اللوحة",
+      "ru": "Изменить номер",
+      "am": "ታርጋ አርትዕ"
+    },
+    "Email": {
+      "fr": "E-mail",
+      "ar": "البريد الإلكتروني",
+      "ru": "Эл. почта",
+      "am": "ኢሜይል"
+    },
+    "Encrypted on this device only, not synced. Use Delete to remove both the profile and its Keychain key.": {
+      "fr": "Chiffré sur cet appareil uniquement, sans synchronisation. Utilisez Supprimer pour retirer le profil et sa clé du trousseau.",
+      "ar": "مشفّر على هذا الجهاز فقط، دون مزامنة. استخدم حذف لإزالة الملف الشخصي ومفتاحه من سلسلة المفاتيح.",
+      "ru": "Зашифровано только на этом устройстве, без синхронизации. «Удалить» убирает профиль и его ключ в связке ключей.",
+      "am": "በዚህ መሣሪያ ላይ ብቻ የተመሰጠረ፣ አይመሳሰልም። መገለጫውን እና የቁልፍ ሰንሰለት ቁልፉን ለማስወገድ ሰርዝን ይጠቀሙ።"
+    },
+    "Examples": {
+      "fr": "Exemples",
+      "ar": "أمثلة",
+      "ru": "Примеры",
+      "am": "ምሳሌዎች"
+    },
+    "Faded crosswalk": {
+      "fr": "Passage piéton effacé",
+      "ar": "معبر مشاة باهت",
+      "ru": "Стёртая «зебра»",
+      "am": "የደበዘዘ የእግረኛ ማቋረጫ"
+    },
+    "First name": {
+      "fr": "Prénom",
+      "ar": "الاسم الأول",
+      "ru": "Имя",
+      "am": "የመጀመሪያ ስም"
+    },
+    "ID": {
+      "fr": "Numéro d'identité",
+      "ar": "رقم الهوية",
+      "ru": "Удостоверение личности",
+      "am": "መታወቂያ"
+    },
+    "Last name": {
+      "fr": "Nom",
+      "ar": "اسم العائلة",
+      "ru": "Фамилия",
+      "am": "የአባት ስም"
+    },
+    "Local analysis only • No submission in this preview": {
+      "fr": "Analyse locale uniquement • Aucun envoi dans cet aperçu",
+      "ar": "تحليل محلي فقط • لا إرسال في هذه المعاينة",
+      "ru": "Только локальный анализ • В этой версии нет отправки",
+      "am": "የአካባቢ ትንተና ብቻ • በዚህ ቅድመ እይታ መላክ የለም"
+    },
+    "Location": {
+      "fr": "Lieu",
+      "ar": "الموقع",
+      "ru": "Место",
+      "am": "ቦታ"
+    },
+    "My reports": {
+      "fr": "Mes signalements",
+      "ar": "بلاغاتي",
+      "ru": "Мои обращения",
+      "am": "የእኔ ሪፖርቶች"
+    },
+    "Needs confirmation": {
+      "fr": "À confirmer",
+      "ar": "يحتاج إلى تأكيد",
+      "ru": "Нужно подтвердить",
+      "am": "ማረጋገጫ ይፈልጋል"
+    },
+    "No plate found. Enter it manually.": {
+      "fr": "Aucune plaque trouvée. Saisissez-la manuellement.",
+      "ar": "لم يتم العثور على لوحة. أدخلها يدوياً.",
+      "ru": "Номер не найден. Введите вручную.",
+      "am": "ታርጋ አልተገኘም። በእጅ ያስገቡ።"
+    },
+    "No report submission in this version": {
+      "fr": "Aucun envoi de signalement dans cette version",
+      "ar": "لا يوجد إرسال للبلاغات في هذا الإصدار",
+      "ru": "В этой версии отправка обращений отключена",
+      "am": "በዚህ ስሪት ሪፖርት መላክ የለም"
+    },
+    "No reports yet": {
+      "fr": "Aucun signalement pour le moment",
+      "ar": "لا توجد بلاغات بعد",
+      "ru": "Обращений пока нет",
+      "am": "ገና ምንም ሪፖርት የለም"
+    },
+    "Not identified yet": {
+      "fr": "Pas encore identifié",
+      "ar": "لم يُحدَّد بعد",
+      "ru": "Пока не определено",
+      "am": "ገና አልተለየም"
+    },
+    "Or choose an existing photo": {
+      "fr": "Ou choisissez une photo existante",
+      "ar": "أو اختر صورة موجودة",
+      "ru": "Или выберите готовое фото",
+      "am": "ወይም ያለ ፎቶ ይምረጡ"
+    },
+    "Parking Reporter": {
+      "fr": "Signalement de stationnement",
+      "ar": "بلاغ مواقف",
+      "ru": "Сообщение о парковке",
+      "am": "የመኪና ማቆሚያ ሪፖርት"
+    },
+    "Phone": {
+      "fr": "Téléphone",
+      "ar": "الهاتف",
+      "ru": "Телефон",
+      "am": "ስልክ"
+    },
+    "Photo and recognition stay on-device. Profile is encrypted locally.": {
+      "fr": "La photo et la reconnaissance restent sur l'appareil. Le profil est chiffré localement.",
+      "ar": "تبقى الصورة والتعرف على الجهاز. الملف الشخصي مشفّر محلياً.",
+      "ru": "Фото и распознавание остаются на устройстве. Профиль зашифрован локально.",
+      "am": "ፎቶ እና ማወቂያ በመሣሪያው ላይ ይቆያሉ። መገለጫው በአካባቢው ተመስጥሯል።"
+    },
+    "Photo time": {
+      "fr": "Heure de la photo",
+      "ar": "وقت الصورة",
+      "ru": "Время съёмки",
+      "am": "የፎቶ ሰዓት"
+    },
+    "Photograph the issue": {
+      "fr": "Photographiez le problème",
+      "ar": "صوّر المشكلة",
+      "ru": "Сфотографируйте проблему",
+      "am": "ችግሩን ፎቶ ያንሱ"
+    },
+    "Photos and text recognition stay on this device. Nothing is submitted. No analytics SDK. Profile uses a device-only Keychain key.": {
+      "fr": "Les photos et la reconnaissance de texte restent sur cet appareil. Rien n'est envoyé. Aucun SDK d'analyse. Le profil utilise une clé du trousseau propre à l'appareil.",
+      "ar": "تبقى الصور والتعرف على النص على هذا الجهاز. لا يتم إرسال شيء. لا توجد حزمة تحليلات. يستخدم الملف الشخصي مفتاحاً في سلسلة المفاتيح خاصاً بالجهاز.",
+      "ru": "Фото и распознавание текста остаются на этом устройстве. Ничего не отправляется. Нет SDK аналитики. Профиль использует ключ связки ключей только этого устройства.",
+      "am": "ፎቶዎች እና የጽሑፍ ማወቂያ በዚህ መሣሪያ ላይ ይቆያሉ። ምንም አይላክም። የትንታኔ SDK የለም። መገለጫው ለመሣሪያው ብቻ የሆነ የቁልፍ ሰንሰለት ቁልፍ ይጠቀማል።"
+    },
+    "Plate": {
+      "fr": "Plaque",
+      "ar": "اللوحة",
+      "ru": "Номер",
+      "am": "ታርጋ"
+    },
+    "Plate number": {
+      "fr": "Numéro de plaque",
+      "ar": "رقم اللوحة",
+      "ru": "Номер автомобиля",
+      "am": "የታርጋ ቁጥር"
+    },
+    "Plate text is read automatically, then opens for review": {
+      "fr": "Le texte de la plaque est lu automatiquement, puis la vérification s'ouvre",
+      "ar": "تُقرأ اللوحة تلقائياً ثم تفتح المراجعة",
+      "ru": "Номер читается автоматически, затем откроется проверка",
+      "am": "የታርጋ ጽሑፍ በራስ-ሰር ይነበባል፣ ከዚያ ግምገማ ይከፈታል"
+    },
+    "Privacy": {
+      "fr": "Confidentialité",
+      "ar": "الخصوصية",
+      "ru": "Конфиденциальность",
+      "am": "ግላዊነት"
+    },
+    "Reading text locally...": {
+      "fr": "Lecture du texte sur l’appareil…",
+      "ar": "جارٍ قراءة النص محلياً...",
+      "ru": "Чтение текста на устройстве...",
+      "am": "ጽሑፍ በአካባቢው በማንበብ ላይ..."
+    },
+    "Recognition is uncertain. Check the photo.": {
+      "fr": "La reconnaissance est incertaine. Vérifiez la photo.",
+      "ar": "التعرف غير مؤكد. تحقق من الصورة.",
+      "ru": "Распознавание неуверенное. Сверьте с фото.",
+      "am": "ማወቂያው እርግጠኛ አይደለም። ፎቶውን ያረጋግጡ።"
+    },
+    "Report": {
+      "fr": "Signaler",
+      "ar": "بلاغ",
+      "ru": "Сообщить",
+      "am": "ሪፖርት"
+    },
+    "Reporter details": {
+      "fr": "Informations du signalant",
+      "ar": "تفاصيل المبلّغ",
+      "ru": "Данные заявителя",
+      "am": "የሪፖርተር ዝርዝሮች"
+    },
+    "Reports are not submitted in this version.": {
+      "fr": "Les signalements ne sont pas envoyés dans cette version.",
+      "ar": "لا يتم إرسال البلاغات في هذا الإصدار.",
+      "ru": "В этой версии обращения не отправляются.",
+      "am": "በዚህ ስሪት ሪፖርቶች አይላኩም።"
+    },
+    "Retake photo": {
+      "fr": "Reprendre la photo",
+      "ar": "إعادة التقاط الصورة",
+      "ru": "Переснять",
+      "am": "ፎቶ እንደገና አንሳ"
+    },
+    "Review report": {
+      "fr": "Vérifier le signalement",
+      "ar": "مراجعة البلاغ",
+      "ru": "Проверка обращения",
+      "am": "ሪፖርት ገምግም"
+    },
+    "Save locally": {
+      "fr": "Enregistrer localement",
+      "ar": "حفظ محلياً",
+      "ru": "Сохранить локально",
+      "am": "በአካባቢ አስቀምጥ"
+    },
+    "Saved on this device.": {
+      "fr": "Enregistré sur cet appareil.",
+      "ar": "تم الحفظ على هذا الجهاز.",
+      "ru": "Сохранено на этом устройстве.",
+      "am": "በዚህ መሣሪያ ላይ ተቀምጧል።"
+    },
+    "Send": {
+      "fr": "Envoyer",
+      "ar": "إرسال",
+      "ru": "Отправить",
+      "am": "ላክ"
+    },
+    "Settings": {
+      "fr": "Réglages",
+      "ar": "الإعدادات",
+      "ru": "Настройки",
+      "am": "ቅንብሮች"
+    },
+    "Start with a photo": {
+      "fr": "Commencez par une photo",
+      "ar": "ابدأ بصورة",
+      "ru": "Начните с фото",
+      "am": "በፎቶ ይጀምሩ"
+    },
+    "Take photo": {
+      "fr": "Prendre une photo",
+      "ar": "التقاط صورة",
+      "ru": "Сделать фото",
+      "am": "ፎቶ አንሳ"
+    },
+    "Text recognition stays on your device": {
+      "fr": "La reconnaissance de texte reste sur votre appareil",
+      "ar": "يبقى التعرف على النص على جهازك",
+      "ru": "Распознавание текста остаётся на вашем устройстве",
+      "am": "የጽሑፍ ማወቂያ በመሣሪያዎ ላይ ይቆያል"
+    },
+    "Vehicle on sidewalk": {
+      "fr": "Véhicule sur le trottoir",
+      "ar": "مركبة على الرصيف",
+      "ru": "Автомобиль на тротуаре",
+      "am": "መኪና በእግረኛ መንገድ ላይ"
+    },
+    "Machine-translated text, not yet reviewed by a native speaker. Some wording may be wrong.": {
+      "fr": "Texte traduit automatiquement, pas encore relu par un locuteur natif. Certaines formulations peuvent être erronées.",
+      "ar": "نص مترجم آليًا ولم يراجعه متحدث أصلي بعد. قد تكون بعض الصياغات غير صحيحة.",
+      "ru": "Текст переведён автоматически и ещё не проверен носителем языка. Некоторые формулировки могут быть неверны.",
+      "am": "ጽሑፉ በማሽን የተተረጎመ ነው፣ በአፍ መፍቻ ቋንቋ ተናጋሪ ገና አልተገመገመም። አንዳንድ አገላለጾች ትክክል ላይሆኑ ይችላሉ።"
+    },
+    "Enter a name, a mobile or international phone number and a valid ID to save.": {
+      "fr": "Saisissez un nom, un numéro mobile ou international et une pièce d'identité valide pour enregistrer.",
+      "ar": "أدخل الاسم ورقم هاتف محمول أو دوليًا ورقم هوية صحيحًا للحفظ.",
+      "ru": "Для сохранения введите имя, мобильный или международный номер телефона и действительный номер удостоверения.",
+      "am": "ለማስቀመጥ ስም፣ የሞባይል ወይም ዓለም አቀፍ ስልክ ቁጥር እና ትክክለኛ መታወቂያ ያስገቡ።"
+    }
+  }
+}

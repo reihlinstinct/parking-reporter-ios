@@ -1,9 +1,25 @@
 import SwiftUI
 import UIKit
 
-enum ReviewLanguage: String { case hebrew = "he", english = "en"
-    func text(_ hebrew: String, _ english: String) -> String { self == .hebrew ? hebrew : english }
-    var direction: LayoutDirection { self == .hebrew ? .rightToLeft : .leftToRight }
+enum ReviewLanguage: String, CaseIterable, Identifiable { case hebrew = "he", english = "en", arabic = "ar", russian = "ru", amharic = "am", french = "fr"
+    var id: String { rawValue }
+    // Hebrew and English come from the call site. Other languages look up the English text in
+    // the UI catalog (Resources/i18n/ui_strings.json); a missing entry shows English, and the
+    // scripts/check_ios_strings.py gate keeps that from happening for shipped screens.
+    func text(_ hebrew: String, _ english: String) -> String {
+        switch self {
+        case .hebrew: return hebrew
+        case .english: return english
+        default: return Localizer.shared.ui(english, self) ?? english
+        }
+    }
+    /// fr, ar, ru and am are machine drafts until a native speaker reviews them.
+    var isMachineTranslated: Bool { self != .hebrew && self != .english }
+    var isRightToLeft: Bool { self == .hebrew || self == .arabic }
+    var direction: LayoutDirection { isRightToLeft ? .rightToLeft : .leftToRight }
+    var nativeName: String {
+        switch self { case .hebrew: return "עברית"; case .english: return "English"; case .arabic: return "العربية"; case .russian: return "Русский"; case .amharic: return "አማርኛ"; case .french: return "Français" }
+    }
 }
 struct PlateRecognition: Equatable {
     let candidates: [String]
@@ -33,11 +49,13 @@ struct ReviewPreview {
 }
 
 extension ReviewLanguage {
-    // Preview flags win; otherwise follow the system language.
-    static func resolve(arguments: [String], preferred: [String]) -> ReviewLanguage {
-        if arguments.contains("--preview-en") { return .english }
-        if arguments.contains("--preview-he") { return .hebrew }
-        return preferred.first?.hasPrefix("he") == true ? .hebrew : .english
+    // Preview flags win, then the user's saved choice, then the system language.
+    static func resolve(arguments: [String], preferred: [String], saved: ReviewLanguage? = nil) -> ReviewLanguage {
+        for language in ReviewLanguage.allCases where arguments.contains("--preview-\(language.rawValue)") { return language }
+        if let saved = saved { return saved }
+        let code = preferred.first.map { String($0.prefix(2)) } ?? ""
+        if code == "iw" { return .hebrew }
+        return ReviewLanguage(rawValue: code) ?? .english
     }
 }
 

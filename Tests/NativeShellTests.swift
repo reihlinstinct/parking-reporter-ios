@@ -6,7 +6,8 @@ final class NativeShellTests: XCTestCase {
         XCTAssertEqual(ReviewLanguage.resolve(arguments: ["--preview-en"], preferred: ["he-IL"]), .english)
         XCTAssertEqual(ReviewLanguage.resolve(arguments: ["--preview-he"], preferred: ["en-US"]), .hebrew)
         XCTAssertEqual(ReviewLanguage.resolve(arguments: [], preferred: ["he-IL"]), .hebrew)
-        XCTAssertEqual(ReviewLanguage.resolve(arguments: [], preferred: ["fr-FR"]), .english)
+        XCTAssertEqual(ReviewLanguage.resolve(arguments: [], preferred: ["fr-FR"]), .french)
+        XCTAssertEqual(ReviewLanguage.resolve(arguments: [], preferred: ["de-DE"]), .english, "unsupported language falls back to English")
         XCTAssertEqual(ReviewLanguage.resolve(arguments: [], preferred: []), .english)
     }
     func testHebrewIsRightToLeft() {
