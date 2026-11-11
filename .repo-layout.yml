@@ -40,7 +40,8 @@
     },
     "scripts": {
       "allow": [
-        "*.py"
+        "*.py",
+        "*.sh"
       ]
     },
     "tests": {
@@ -51,6 +52,30 @@
     "tools": {
       "allow": [
         "*.py"
+      ]
+    },
+    "Sources": {
+      "allow": [
+        "*.swift"
+      ]
+    },
+    "Tests": {
+      "allow": [
+        "*.swift"
+      ]
+    },
+    "interop": {
+      "allow": [
+        "*.java",
+        "*.m",
+        "*.xml",
+        "*.bazel",
+        "*.base64"
+      ]
+    },
+    "Resources": {
+      "allow": [
+        "*.json"
       ]
     }
   }
