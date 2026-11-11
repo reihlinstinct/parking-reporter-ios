@@ -61,7 +61,7 @@ Window > Devices and Simulators > חבר בכבל > בחר את המכשיר > C
 
 מקור: https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components.md
 
-ב-CI לא רצים סימולטורים של iOS 15 עד 17, כי תמונות הרצה החינמיות לא כוללות אותם (ב-macos-14 היה iOS 17 והיא מתוכננת לפרישה ב-2 בנובמבר 2026, מקור: https://github.blog/changelog/2026-10-01-github-actions-macos-14-runner-image-retirement/). ראה [COMPATIBILITY.md](COMPATIBILITY.md).
+ב-CI לא רצים סימולטורים של iOS 15 עד 17, כי תמונות הרצה החינמיות לא כוללות אותם (ב-macos-14 היה iOS 17 והיא פרשה ב-2 בנובמבר 2026, מקור: https://github.blog/changelog/2026-10-01-github-actions-macos-14-runner-image-retirement/). ראה [COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## English
 
@@ -122,4 +122,4 @@ Window > Devices and Simulators > connect by cable > select the device > Connect
 
 Source: https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components.md
 
-CI does not run iOS 15 to 17 simulators: the free runner images do not ship them (macos-14 had iOS 17 and is scheduled for retirement on 2 Nov 2026, source: https://github.blog/changelog/2026-10-01-github-actions-macos-14-runner-image-retirement/). See [COMPATIBILITY.md](COMPATIBILITY.md).
+CI does not run iOS 15 to 17 simulators: the free runner images do not ship them (macos-14 had iOS 17 and was retired on 2 Nov 2026, source: https://github.blog/changelog/2026-10-01-github-actions-macos-14-runner-image-retirement/). See [COMPATIBILITY.md](COMPATIBILITY.md).
