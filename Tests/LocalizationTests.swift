@@ -6,11 +6,20 @@ final class LocalizationTests: XCTestCase {
 
     func testTableLoadsFromBundle() { XCTAssertGreaterThan(loc.table.count, 100) }
 
-    func testEveryKeyHasHebrewAndEnglish() {
+    func testEveryKeyHasEveryLanguageForTheCoreSet() {
         for (key, entry) in loc.table {
-            XCTAssertNotNil(entry["he"], "missing he: \(key)")
-            XCTAssertNotNil(entry["en"], "missing en: \(key)")
+            for language in [ReviewLanguage.hebrew, .english, .french] {
+                XCTAssertNotNil(entry[language.rawValue], "missing \(language.rawValue): \(key)")
+            }
         }
+    }
+    func testFrenchPluralsAndSample() {
+        XCTAssertEqual(PluralRule.category(.french, 0), "one")
+        XCTAssertEqual(PluralRule.category(.french, 1), "one")
+        XCTAssertEqual(PluralRule.category(.french, 2), "other")
+        XCTAssertEqual(loc.plural("common.reports_count", .french, count: 1), "1 signalement")
+        XCTAssertEqual(loc.plural("common.reports_count", .french, count: 3), "3 signalements")
+        XCTAssertEqual(loc.string("common.cancel", .french), "Annuler")
     }
     func testPlaceholdersMatchAcrossLanguages() {
         let pattern = try! NSRegularExpression(pattern: "\\{[a-z_]+\\}")
@@ -52,5 +61,6 @@ final class LocalizationTests: XCTestCase {
     }
     func testRightToLeftLanguages() {
         XCTAssertEqual(ReviewLanguage.allCases.filter { $0.isRightToLeft }.map { $0.rawValue }.sorted(), ["ar", "he"])
+        XCTAssertEqual(ReviewLanguage.french.direction, .leftToRight)
     }
 }

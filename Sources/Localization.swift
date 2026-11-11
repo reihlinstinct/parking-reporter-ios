@@ -44,7 +44,7 @@ enum PluralRule {
         switch language {
         case .hebrew: return n == 1 ? "one" : n == 2 ? "two" : "other"
         case .english: return n == 1 ? "one" : "other"
-        case .amharic: return n == 0 || n == 1 ? "one" : "other"
+        case .amharic, .french: return n == 0 || n == 1 ? "one" : "other"
         case .arabic:
             if n == 0 { return "zero" }; if n == 1 { return "one" }; if n == 2 { return "two" }
             let r = n % 100

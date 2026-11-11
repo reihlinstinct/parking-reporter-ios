@@ -21,6 +21,8 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(ReviewLanguage.resolve(arguments: ["--preview-am"], preferred: ["he-IL"], saved: .russian), .amharic)
         XCTAssertEqual(ReviewLanguage.resolve(arguments: [], preferred: ["iw-IL"]), .hebrew)
         XCTAssertEqual(ReviewLanguage.resolve(arguments: [], preferred: ["ar-SA"]), .arabic)
+        XCTAssertEqual(ReviewLanguage.resolve(arguments: [], preferred: ["fr-FR"]), .french)
+        XCTAssertEqual(ReviewLanguage.resolve(arguments: ["--preview-fr"], preferred: ["he-IL"]), .french)
     }
     func testOnboardingGate() {
         let (settings, _) = makeSettings()

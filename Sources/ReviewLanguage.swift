@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-enum ReviewLanguage: String, CaseIterable, Identifiable { case hebrew = "he", english = "en", arabic = "ar", russian = "ru", amharic = "am"
+enum ReviewLanguage: String, CaseIterable, Identifiable { case hebrew = "he", english = "en", arabic = "ar", russian = "ru", amharic = "am", french = "fr"
     var id: String { rawValue }
     // Legacy two-language helper: Hebrew gets the Hebrew string, every other language the English one.
     // New screens use Localizer keys, which carry all five languages.
@@ -9,7 +9,7 @@ enum ReviewLanguage: String, CaseIterable, Identifiable { case hebrew = "he", en
     var isRightToLeft: Bool { self == .hebrew || self == .arabic }
     var direction: LayoutDirection { isRightToLeft ? .rightToLeft : .leftToRight }
     var nativeName: String {
-        switch self { case .hebrew: return "עברית"; case .english: return "English"; case .arabic: return "العربية"; case .russian: return "Русский"; case .amharic: return "አማርኛ" }
+        switch self { case .hebrew: return "עברית"; case .english: return "English"; case .arabic: return "العربية"; case .russian: return "Русский"; case .amharic: return "አማርኛ"; case .french: return "Français" }
     }
 }
 struct PlateRecognition: Equatable {
