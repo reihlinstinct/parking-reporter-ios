@@ -9,3 +9,4 @@ vendor/
 interop/generated/
 
 interop/classpath.txt
+__pycache__/

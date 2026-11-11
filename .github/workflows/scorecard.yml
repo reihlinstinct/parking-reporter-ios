@@ -22,6 +22,10 @@ jobs:
         run: |
           python3 -m unittest discover -s tests/security -p test_scorecard_guard.py -v
           python3 scripts/security/scorecard_guard.py
+      - name: Repository secret scan and tests
+        run: |
+          python3 -m unittest discover -s tests/security -p test_check_repository.py -v
+          python3 scripts/check_repository.py
   analysis:
     if: github.event_name != 'pull_request'
     needs: guard
@@ -39,11 +43,15 @@ jobs:
         run: |
           python3 -m unittest discover -s tests/security -p test_scorecard_guard.py -v
           python3 scripts/security/scorecard_guard.py
+      - name: Repository secret scan and tests
+        run: |
+          python3 -m unittest discover -s tests/security -p test_check_repository.py -v
+          python3 scripts/check_repository.py
       - uses: ossf/scorecard-action@fa7117db83c52d787ae5a89f350999701505d78e # v2.5.0
         with:
           results_file: results.sarif
           results_format: sarif
           publish_results: false
-      - uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4
+      - uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
         with:
           sarif_file: results.sarif
