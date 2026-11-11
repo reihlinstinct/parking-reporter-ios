@@ -27,6 +27,8 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertTrue(settings.shouldShowOnboarding(arguments: []))
         XCTAssertFalse(settings.shouldShowOnboarding(arguments: ["--preview-en"]))
         XCTAssertTrue(settings.shouldShowOnboarding(arguments: ["--preview-en", "--preview-onboarding"]))
+        settings.finishedThisSession = true
+        XCTAssertFalse(settings.shouldShowOnboarding(arguments: ["--preview-en", "--preview-onboarding"]))
         settings.onboarded = true
         XCTAssertFalse(settings.shouldShowOnboarding(arguments: []))
     }

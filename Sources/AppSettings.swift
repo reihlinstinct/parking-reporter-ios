@@ -6,6 +6,8 @@ final class AppSettings: ObservableObject {
     private let defaults: UserDefaults
     @Published var savedLanguage: ReviewLanguage? { didSet { defaults.set(savedLanguage?.rawValue, forKey: Keys.language) } }
     @Published var onboarded: Bool { didSet { defaults.set(onboarded, forKey: Keys.onboarded) } }
+    // Not persisted: lets a preview launch with --preview-onboarding finish the flow.
+    @Published var finishedThisSession = false
     enum Keys { static let language = "app.language"; static let onboarded = "app.onboarded" }
 
     init(defaults: UserDefaults = .standard) {
@@ -18,7 +20,7 @@ final class AppSettings: ObservableObject {
     }
     // Preview and test launches skip first-run unless they ask for it.
     func shouldShowOnboarding(arguments: [String]) -> Bool {
-        if arguments.contains("--preview-onboarding") { return true }
+        if arguments.contains("--preview-onboarding") { return !finishedThisSession }
         if arguments.contains(where: { $0.hasPrefix("--preview-") }) { return false }
         return !onboarded
     }

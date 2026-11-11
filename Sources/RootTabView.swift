@@ -12,7 +12,7 @@ struct RootTabView: View {
     var body: some View {
         Group {
             if settings.shouldShowOnboarding(arguments: arguments) {
-                OnboardingView(settings: settings, language: language) { settings.onboarded = true }
+                OnboardingView(settings: settings, language: language) { settings.onboarded = true; settings.finishedThisSession = true }
             } else { tabs }
         }
         .accentColor(AppTheme.accent)
