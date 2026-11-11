@@ -71,7 +71,7 @@ final class AppSettingsTests: XCTestCase {
         let arabicMobile = script(j("050", "123", "456", "7"), zero: 0x0660)
         let arabicIntl = "+" + script(j("972", "501", "234", "567"), zero: 0x0660)
         XCTAssertNotEqual(arabicID, j("000", "000", "018"))
-        XCTAssertEqual(ReporterValidation.canonicalID(arabicID), "000000018")
+        XCTAssertEqual(ReporterValidation.canonicalID(arabicID), j("000", "000", "018"))
         XCTAssertTrue(ReporterValidation.validID(arabicID))
         XCTAssertTrue(ReporterValidation.validID(arabicShortID))
         XCTAssertTrue(ReporterValidation.validPhone(arabicMobile))
@@ -91,7 +91,7 @@ final class AppSettingsTests: XCTestCase {
     func testNormalizedProfileStoresASCIIOnly() {
         var p = ReporterProfile(); p.first = " A "; p.last = "B"; p.phone = script(j("050", "123", "456", "7"), zero: 0x0660); p.identifier = script(j("000", "000", "018"), zero: 0x0660)
         let n = ReporterValidation.normalized(p)
-        XCTAssertEqual(n.phone, j("+97", "250", "123", "456", "7")); XCTAssertEqual(n.identifier, "000000018"); XCTAssertEqual(n.first, "A")
+        XCTAssertEqual(n.phone, j("+97", "250", "123", "456", "7")); XCTAssertEqual(n.identifier, j("000", "000", "018")); XCTAssertEqual(n.first, "A")
     }
     func testEmailAndName() {
         XCTAssertTrue(ReporterValidation.validEmail(""))
