@@ -18,7 +18,7 @@ The iOS 15.0 baseline is enforced three other ways instead:
 - a CI step checks that the built app declares `MinimumOSVersion` 15.0
 - the Camera, permissions and performance check on a real iPhone 6s (below)
 
-The owner decided to keep the iOS 15 floor for now: the 15.0 deployment target and its guards stay as they are. iOS 15 behaviour is verified only by real-device testing on the owner's iPhone 6s, not by CI.
+iOS 15 (the 15.0 deployment target and its guards) can be verified only by a manual check on a real device (the owner's iPhone 6s). No result of such a check is recorded here, and CI does not cover iOS 15. Whether to keep the 15 floor is an owner decision that is not recorded in this repository.
 
 The runtimes the matrix actually used are printed at the top of each job log.
 
