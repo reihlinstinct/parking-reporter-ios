@@ -10,7 +10,6 @@ jobs:
     if: github.event.repository.private == false
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 40
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -19,6 +18,8 @@ jobs:
           - { runner: macos-26, label: macos26 }
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
       - run: brew install xcodegen
       - run: xcodegen generate
       - name: Pick newest iOS runtime and device

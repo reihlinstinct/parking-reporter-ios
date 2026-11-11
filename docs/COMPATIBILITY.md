@@ -3,10 +3,18 @@
 Baseline: iOS 15.0, so older iPhones (6s and up) keep working. Anything newer
 must sit behind `#available` with a fallback, and each fallback is listed here.
 
-CI runs the full unit and UI test suite on a simulator matrix (workflow
-`iOS compatibility matrix`): iOS 15.5, 16.4, 17.5 and the newest runtime on the
-runner image. The newest-runtime job gates merges. The older runtimes are
-downloaded on demand and start as non-blocking until they have run reliably.
+CI runs the full unit and UI test suite on simulators (workflow `iOS compatibility matrix`):
+the oldest and newest iOS runtime preinstalled on the macos-15 image, and the newest on the
+macos-26 image. All three jobs block the PR.
+
+No iOS 15.0 simulator is run. The free runner images do not ship that runtime, and the
+workflow does not download runtimes, because a download has no pin or checksum to verify.
+The iOS 15.0 baseline is enforced three other ways instead:
+- the deployment target is 15.0, so the compiler rejects any newer API without `#available`
+- a CI step checks that the built app declares `MinimumOSVersion` 15.0
+- the Camera, permissions and performance check on a real iPhone 6s (below)
+
+The runtimes the matrix actually used are printed at the top of each job log.
 
 ## Rules
 

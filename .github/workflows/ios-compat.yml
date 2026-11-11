@@ -8,41 +8,39 @@ concurrency:
 jobs:
   compat:
     if: github.event.repository.private == false
-    runs-on: macos-15
-    timeout-minutes: 50
-    continue-on-error: ${{ matrix.experimental }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { ios: "15.5", experimental: true }
-          - { ios: "16.4", experimental: true }
-          - { ios: "17.5", experimental: true }
-          - { ios: "latest", experimental: false }
+          # Only simulator runtimes that are preinstalled on the runner image are used. Nothing is
+          # downloaded, so there is no unpinned runtime fetch. A missing runtime fails the job.
+          - { runner: macos-15, pick: oldest, label: macos15-oldest }
+          - { runner: macos-15, pick: newest, label: macos15-newest }
+          - { runner: macos-26, pick: newest, label: macos26-newest }
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
       - run: brew install xcodegen
       - run: xcodegen generate
-      - name: Prepare simulator runtime
+      - name: Select an installed simulator runtime
         run: |
-          VER="${{ matrix.ios }}"
-          if [ "$VER" != latest ] && ! xcrun simctl list runtimes | grep -q "iOS $VER "; then
-            xcodebuild -downloadPlatform iOS -buildVersion "$VER"
-          fi
-          echo "--- runtimes"; xcrun simctl list runtimes
+          xcodebuild -version
+          xcrun simctl list runtimes
           xcrun simctl list runtimes -j > /tmp/runtimes.json
-          python3 - "$VER" <<'PY' > /tmp/sim.env
+          python3 - "${{ matrix.pick }}" <<'PY' > /tmp/sim.env
           import json, sys
-          ver = sys.argv[1]
+          pick = sys.argv[1]
           rts = [r for r in json.load(open('/tmp/runtimes.json'))['runtimes'] if r['name'].startswith('iOS') and r['isAvailable']]
-          if ver != 'latest':
-              rts = [r for r in rts if r['version'] == ver]
           if not rts:
-              raise SystemExit('no iOS %s runtime available' % ver)
-          rt = sorted(rts, key=lambda r: [int(x) for x in r['version'].split('.')])[-1]
+              raise SystemExit('no iOS simulator runtime installed on this image')
+          rts.sort(key=lambda r: [int(x) for x in r['version'].split('.')])
+          rt = rts[0] if pick == 'oldest' else rts[-1]
           types = [t for t in rt['supportedDeviceTypes'] if t['name'].startswith('iPhone')]
-          pick = next((t for t in types if t['name'].startswith('iPhone SE (3rd')), types[0])
-          print('RT=%s' % rt['identifier']); print('TYPE=%s' % pick['identifier']); print('RTVER=%s' % rt['version'])
+          choice = next((t for t in types if t['name'].startswith('iPhone SE (3rd')), types[0])
+          print('RT=%s' % rt['identifier']); print('TYPE=%s' % choice['identifier']); print('RTVER=%s' % rt['version'])
           PY
           cat /tmp/sim.env
       - name: Build and test on the simulator
@@ -52,9 +50,15 @@ jobs:
           xcrun simctl boot "$UDID"; xcrun simctl bootstatus "$UDID" -b
           echo "Testing on iOS $RTVER"
           xcodebuild -project ParkingReporter.xcodeproj -scheme ParkingReporter -destination "platform=iOS Simulator,id=$UDID" -derivedDataPath build -resultBundlePath build/Compat.xcresult CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO test
+      - name: The app still declares iOS 15.0 as its minimum
+        run: |
+          APP=build/Build/Products/Debug-iphonesimulator/ParkingReporter.app
+          MIN=$(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' "$APP/Info.plist")
+          echo "MinimumOSVersion=$MIN"
+          test "$MIN" = "15.0"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
         with:
-          name: compat-${{ matrix.ios }}-results
+          name: compat-${{ matrix.label }}-results
           path: build/Compat.xcresult
           retention-days: 7
