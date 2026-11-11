@@ -1,0 +1,66 @@
+name: iOS screens on newer runtimes
+on: [pull_request, workflow_dispatch]
+permissions:
+  contents: read
+concurrency:
+  group: ios-screens-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  screens:
+    if: github.event.repository.private == false
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-15, label: macos15 }
+          - { runner: macos-26, label: macos26 }
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+      - run: brew install xcodegen
+      - run: xcodegen generate
+      - name: Pick newest iOS runtime and device
+        run: |
+          xcodebuild -version; xcrun simctl list runtimes
+          xcrun simctl list runtimes -j > /tmp/runtimes.json
+          python3 - <<'PY' > /tmp/sim.env
+          import json
+          rts = [r for r in json.load(open('/tmp/runtimes.json'))['runtimes'] if r['name'].startswith('iOS') and r['isAvailable']]
+          rt = sorted(rts, key=lambda r: [int(x) for x in r['version'].split('.')])[-1]
+          types = [t for t in rt['supportedDeviceTypes'] if t['name'].startswith('iPhone')]
+          pick = next((t for t in types if t['name'].startswith('iPhone 16') and 'Pro' not in t['name'] and 'Plus' not in t['name']), types[0])
+          print('RT=%s' % rt['identifier']); print('TYPE=%s' % pick['identifier']); print('RTVER=%s' % rt['version'])
+          PY
+          cat /tmp/sim.env
+      - name: Build, test and capture screens
+        run: |
+          . /tmp/sim.env
+          UDID=$(xcrun simctl create shots "$TYPE" "$RT")
+          xcrun simctl boot "$UDID"; xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100
+          xcodebuild -project ParkingReporter.xcodeproj -scheme ParkingReporter -destination "platform=iOS Simulator,id=$UDID" -derivedDataPath build CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO test
+          APP=build/Build/Products/Debug-iphonesimulator/ParkingReporter.app
+          xcrun simctl install "$UDID" "$APP"
+          mkdir -p build/screens; echo "iOS $RTVER" > build/screens/ios-version.txt
+          for LANG in he en; do
+            for STATE in capture confident history settings onboarding; do
+              FLAG=""
+              [ "$STATE" = capture ] && FLAG="--preview-capture"
+              [ "$STATE" = history ] && FLAG="--preview-history"
+              [ "$STATE" = settings ] && FLAG="--preview-settings"
+              [ "$STATE" = onboarding ] && FLAG="--preview-onboarding"
+              xcrun simctl terminate "$UDID" org.sidewalks.ParkingReporter || true
+              xcrun simctl launch "$UDID" org.sidewalks.ParkingReporter "--preview-$LANG" $FLAG
+              sleep 3
+              xcrun simctl io "$UDID" screenshot "build/screens/$LANG-$STATE.png"
+            done
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: screens-${{ matrix.label }}
+          path: build/screens/
+          retention-days: 7
