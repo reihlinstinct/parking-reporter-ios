@@ -16,6 +16,7 @@ jobs:
           persist-credentials: false
       - run: python3 scripts/check_repository.py
       - run: python3 scripts/check_ios_strings.py
+      - run: python3 scripts/check_device_docs.py
       - run: brew install xcodegen
       - run: xcodegen generate
       - name: Build and test with simulator-only ad-hoc signing
