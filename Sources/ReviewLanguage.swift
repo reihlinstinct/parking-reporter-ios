@@ -13,6 +13,8 @@ enum ReviewLanguage: String, CaseIterable, Identifiable { case hebrew = "he", en
         default: return Localizer.shared.ui(english, self) ?? english
         }
     }
+    /// fr, ar, ru and am are machine drafts until a native speaker reviews them.
+    var isMachineTranslated: Bool { self != .hebrew && self != .english }
     var isRightToLeft: Bool { self == .hebrew || self == .arabic }
     var direction: LayoutDirection { isRightToLeft ? .rightToLeft : .leftToRight }
     var nativeName: String {

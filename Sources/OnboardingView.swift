@@ -27,6 +27,9 @@ struct OnboardingView: View {
                 Text(t("firstrun.step_capture")); Text(t("firstrun.step_review")); Text(t("firstrun.step_send"))
             }.font(.body)
             Text(t("firstrun.settings_note")).font(.footnote).foregroundColor(.secondary)
+            if language.isMachineTranslated {
+                Text(language.text("", "Machine-translated text, not yet reviewed by a native speaker. Some wording may be wrong.")).font(.footnote).foregroundColor(.secondary)
+            }
             Spacer()
             Button { step = 1 } label: { Text(t("firstrun.start")).font(.headline).frame(maxWidth: .infinity) }
                 .buttonStyle(.borderedProminent).tint(AppTheme.buttonFill).controlSize(.large)
@@ -43,7 +46,7 @@ struct OnboardingView: View {
                 field("settings.field.first_name", $profile.first, valid: ReporterValidation.validName(profile.first), error: nil)
                 field("settings.field.last_name", $profile.last, valid: ReporterValidation.validName(profile.last), error: nil)
                 field("settings.field.phone", $profile.phone, valid: ReporterValidation.validPhone(profile.phone), error: "settings.phone.invalid", keyboard: .phonePad)
-                field("settings.field.id_number", $profile.identifier, valid: ReporterValidation.validID(profile.identifier), error: "settings.id.invalid", keyboard: .numberPad)
+                field("settings.field.id_number", $profile.identifier, valid: ReporterValidation.validID(profile.identifier), error: "settings.id.invalid", keyboard: .numberPad, secure: true)
                 field("settings.field.email", $profile.email, valid: ReporterValidation.validEmail(profile.email), error: "settings.email.invalid", keyboard: .emailAddress)
             }
             Section {
@@ -53,9 +56,10 @@ struct OnboardingView: View {
             }
         }.navigationTitle(t("setup.title"))
     }
-    private func field(_ key: String, _ binding: Binding<String>, valid: Bool, error: String?, keyboard: UIKeyboardType = .default) -> some View {
+    private func field(_ key: String, _ binding: Binding<String>, valid: Bool, error: String?, keyboard: UIKeyboardType = .default, secure: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            TextField(t(key), text: binding).keyboardType(keyboard).disableAutocorrection(true).textContentType(nil)
+            if secure { SecureField(t(key), text: binding).keyboardType(keyboard).disableAutocorrection(true).textContentType(nil) }
+            else { TextField(t(key), text: binding).keyboardType(keyboard).disableAutocorrection(true).textContentType(nil) }
             if attempted && !valid { Text(error.map(t) ?? t("common.error.generic")).font(.caption).foregroundColor(.red) }
         }
     }
@@ -64,6 +68,6 @@ struct OnboardingView: View {
         guard ReporterValidation.validName(profile.first), ReporterValidation.validName(profile.last),
               ReporterValidation.validPhone(profile.phone), ReporterValidation.validID(profile.identifier),
               ReporterValidation.validEmail(profile.email) else { return }
-        do { try store.save(profile); finish() } catch { saveFailed = true }
+        do { try store.save(ReporterValidation.normalized(profile)); finish() } catch { saveFailed = true }
     }
 }

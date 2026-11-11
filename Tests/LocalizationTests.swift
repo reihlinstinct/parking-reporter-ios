@@ -79,4 +79,9 @@ final class LocalizationTests: XCTestCase {
             }
         }
     }
+    func testMachineTranslationNoticeOnlyForDraftLanguages() {
+        XCTAssertFalse(ReviewLanguage.hebrew.isMachineTranslated)
+        XCTAssertFalse(ReviewLanguage.english.isMachineTranslated)
+        for language in [ReviewLanguage.french, .arabic, .russian, .amharic] { XCTAssertTrue(language.isMachineTranslated) }
+    }
 }

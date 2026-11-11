@@ -20,7 +20,7 @@ struct RootTabView: View {
     }
     private var tabs: some View {
         TabView(selection: $tab) {
-            ContentView(language: language).id(language)
+            ContentView(language: language)
                 .tabItem { Label(language.text("דיווח", "Report"), systemImage: "camera.fill") }.tag(0)
             HistoryView(language: language)
                 .tabItem { Label(language.text("הדיווחים שלי", "My reports"), systemImage: "list.bullet.rectangle") }.tag(1)
@@ -92,6 +92,9 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
+                if language.isMachineTranslated {
+                    Section { Text(language.text("", "Machine-translated text, not yet reviewed by a native speaker. Some wording may be wrong.")).font(.footnote).foregroundColor(.secondary) }
+                }
                 Section {
                     NavigationLink(destination: LanguageListView(settings: settings, language: language)) {
                         Label(Localizer.shared.string("settings.language.title", language), systemImage: "globe")

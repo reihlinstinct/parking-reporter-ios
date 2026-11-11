@@ -28,25 +28,40 @@ final class AppSettings: ObservableObject {
 
 enum ReporterValidation {
     static func validName(_ value: String) -> Bool { !value.trimmingCharacters(in: .whitespaces).isEmpty }
-    // Israeli mobile (05x-xxxxxxx, also as +9725xxxxxxxx) or an international number with + and
-    // country code. Landlines and all-zero numbers are rejected, matching the user-facing hint.
-    static func validPhone(_ value: String) -> Bool {
-        let compact = value.filter { !" -()".contains($0) }
-        guard compact.allSatisfy({ $0 == "+" || ("0"..."9").contains($0) }), compact.filter({ $0 == "+" }).count <= 1 else { return false }
-        if compact.hasPrefix("+") {
-            let digits = String(compact.dropFirst())
-            guard !digits.isEmpty, !digits.hasPrefix("0"), (7...15).contains(digits.count) else { return false }
-            if digits.hasPrefix("972") { return digits.count == 12 && digits.dropFirst(3).hasPrefix("5") }
-            return true
+    /// Any decimal digit (Arabic-Indic, Devanagari, fullwidth...) becomes ASCII 0-9, like Android's
+    /// ReporterInput.digits. Everything else is dropped.
+    static func digits(_ value: String) -> String {
+        var out = ""
+        for scalar in value.unicodeScalars where scalar.properties.generalCategory == .decimalNumber {
+            if let n = Character(scalar).wholeNumberValue, (0...9).contains(n) { out.append(Character(String(n))) }
         }
-        return compact.count == 10 && compact.hasPrefix("05") && Set(compact.dropFirst(2)).count > 1
+        return out
     }
-    // Five to nine ASCII digits with the Israeli check digit. ASCII only: other scripts' digits
-    // pass Character.isNumber but must never reach Int conversion.
+    static func phoneInput(_ value: String) -> String {
+        (value.trimmingCharacters(in: .whitespaces).hasPrefix("+") ? "+" : "") + digits(value)
+    }
+    /// 05x-xxxxxxx becomes +9725xxxxxxxx; everything else is returned in normalized form.
+    static func canonicalPhone(_ value: String) -> String {
+        let clean = phoneInput(value)
+        if clean.count == 10, clean.hasPrefix("05") { return "+972" + clean.dropFirst() }
+        return clean
+    }
+    static func canonicalID(_ value: String) -> String { digits(value) }
+    // Israeli mobile (05x-xxxxxxx or +9725xxxxxxxx) or an international number: + and 8 to 15
+    // digits, no leading 0. Landlines, +972 non-mobile and all-zero numbers are rejected.
+    static func validPhone(_ value: String) -> Bool {
+        let canonical = canonicalPhone(value)
+        guard canonical.hasPrefix("+") else { return false }
+        let digits = String(canonical.dropFirst())
+        guard (8...15).contains(digits.count), !digits.hasPrefix("0") else { return false }
+        if digits.hasPrefix("972") { return digits.count == 12 && digits.dropFirst(3).hasPrefix("5") && Set(digits.dropFirst(4)).count > 1 }
+        return true
+    }
+    // One to nine digits (padded with zeros) with the Israeli check digit, after digit normalizing.
     static func validID(_ value: String) -> Bool {
-        let digits = Array(value.utf8)
-        guard (5...9).contains(digits.count), digits.allSatisfy({ $0 >= 48 && $0 <= 57 }) else { return false }
-        let padded = [UInt8](repeating: 48, count: 9 - digits.count) + digits
+        let ascii = Array(canonicalID(value).utf8)
+        guard (1...9).contains(ascii.count) else { return false }
+        let padded = [UInt8](repeating: 48, count: 9 - ascii.count) + ascii
         var sum = 0
         for (index, byte) in padded.enumerated() {
             var n = Int(byte - 48) * (index % 2 == 0 ? 1 : 2)
@@ -54,6 +69,13 @@ enum ReporterValidation {
             sum += n
         }
         return sum % 10 == 0 && sum > 0
+    }
+    static func normalized(_ profile: ReporterProfile) -> ReporterProfile {
+        var p = profile
+        p.phone = canonicalPhone(p.phone); p.identifier = canonicalID(p.identifier)
+        p.first = p.first.trimmingCharacters(in: .whitespaces); p.last = p.last.trimmingCharacters(in: .whitespaces)
+        p.email = p.email.trimmingCharacters(in: .whitespaces)
+        return p
     }
     static func validEmail(_ value: String) -> Bool {
         value.isEmpty || value.range(of: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", options: .regularExpression) != nil

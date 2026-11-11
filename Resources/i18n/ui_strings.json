@@ -360,6 +360,18 @@
       "ar": "مركبة على الرصيف",
       "ru": "Автомобиль на тротуаре",
       "am": "መኪና በእግረኛ መንገድ ላይ"
+    },
+    "Machine-translated text, not yet reviewed by a native speaker. Some wording may be wrong.": {
+      "fr": "Texte traduit automatiquement, pas encore relu par un locuteur natif. Certaines formulations peuvent être erronées.",
+      "ar": "نص مترجم آليًا ولم يراجعه متحدث أصلي بعد. قد تكون بعض الصياغات غير صحيحة.",
+      "ru": "Текст переведён автоматически и ещё не проверен носителем языка. Некоторые формулировки могут быть неверны.",
+      "am": "ጽሑፉ በማሽን የተተረጎመ ነው፣ በአፍ መፍቻ ቋንቋ ተናጋሪ ገና አልተገመገመም። አንዳንድ አገላለጾች ትክክል ላይሆኑ ይችላሉ።"
+    },
+    "Enter a name, a mobile or international phone number and a valid ID to save.": {
+      "fr": "Saisissez un nom, un numéro mobile ou international et une pièce d'identité valide pour enregistrer.",
+      "ar": "أدخل الاسم ورقم هاتف محمول أو دوليًا ورقم هوية صحيحًا للحفظ.",
+      "ru": "Для сохранения введите имя, мобильный или международный номер телефона и действительный номер удостоверения.",
+      "am": "ለማስቀመጥ ስም፣ የሞባይል ወይም ዓለም አቀፍ ስልክ ቁጥር እና ትክክለኛ መታወቂያ ያስገቡ።"
     }
   }
 }
