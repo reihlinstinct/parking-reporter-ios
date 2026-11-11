@@ -31,3 +31,32 @@ struct ReviewPreview {
         }
     }
 }
+
+extension ReviewLanguage {
+    // Preview flags win; otherwise follow the system language.
+    static func resolve(arguments: [String], preferred: [String]) -> ReviewLanguage {
+        if arguments.contains("--preview-en") { return .english }
+        if arguments.contains("--preview-he") { return .hebrew }
+        return preferred.first?.hasPrefix("he") == true ? .hebrew : .english
+    }
+}
+
+enum AppTheme {
+    // Navy from the municipal-style palette, lighter in dark mode for contrast.
+    static let accent = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.55, green: 0.70, blue: 0.95, alpha: 1)
+            : UIColor(red: 0.07, green: 0.18, blue: 0.40, alpha: 1)
+    })
+}
+
+enum ReportTimeFormat {
+    // Readable 24-hour local time, never a timezone-stamped value.
+    static func string(from date: Date, timeZone: TimeZone = .current) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "dd/MM/yyyy HH:mm"
+        return formatter.string(from: date)
+    }
+}

@@ -7,7 +7,7 @@ import AVFoundation
         if ProcessInfo.processInfo.arguments.contains("--preview-profile") {
             let language: ReviewLanguage = ProcessInfo.processInfo.arguments.contains("--preview-he") ? .hebrew : .english
             NavigationView { ProfileView(language: language) }.environment(\.layoutDirection, language.direction)
-        } else { ContentView() }
+        } else { RootTabView() }
     } }
 }
 struct ContentView: View {
@@ -28,8 +28,7 @@ struct ContentView: View {
     @State private var detailEditor: DetailField?
     enum DetailField: String, Identifiable { case category, location, time; var id: String { rawValue } }
     @State private var privacy = false
-    @State private var showProfile = false
-    private let accent = Color(red: 0.07, green: 0.40, blue: 0.42)
+    private let accent = AppTheme.accent
     enum PickerKind: String, Identifiable { case camera, library; var id: String { rawValue } }
     init() {
         let args = ProcessInfo.processInfo.arguments
@@ -51,13 +50,7 @@ struct ContentView: View {
             }
             .navigationTitle(language.text(review ? "בדיקת דיווח" : "דיווח חניה", review ? "Review report" : "Parking Reporter"))
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { showProfile = true } label: { Image(systemName: "gearshape").frame(width: 44, height: 44) }.accessibilityLabel(language.text("הגדרות", "Settings"))
-                }
-            }
             .sheet(item: $picker) { selected in if selected == .camera { CameraPicker(receive: accept) } else { PhotoPicker(receive: accept) } }
-            .sheet(isPresented: $showProfile) { NavigationView { ProfileView(language: language) }.environment(\.layoutDirection, language.direction) }
             .sheet(isPresented: $privacy) { NavigationView { ScrollView { Text(language.text("תמונות וזיהוי טקסט נשארים במכשיר. שום דיווח לא נשלח. אין SDK אנליטיקה. הפרופיל מוצפן במפתח Keychain למכשיר זה בלבד.", "Photos and text recognition stay on this device. Nothing is submitted. No analytics SDK. Profile uses a device-only Keychain key.")).padding() }.navigationTitle(language.text("פרטיות", "Privacy")) } }
             .sheet(item: $detailEditor) { field in
                 NavigationView {
@@ -91,7 +84,7 @@ struct ContentView: View {
                 Text(language.text("זיהוי הלוחית יפעל אוטומטית, ואז תיפתח בדיקה", "Plate text is read automatically, then opens for review")).font(.body).foregroundColor(.secondary).multilineTextAlignment(.center)
             }
             if busy { ProgressView(language.text("מנתח במכשיר...", "Analyzing on-device...")) }
-            Button { requestCamera() } label: { Label(language.text("צילום תמונה", "Take photo"), systemImage: "camera.fill").font(.headline).frame(maxWidth: .infinity).frame(height: 56) }.foregroundColor(.white).background(accent).cornerRadius(16).disabled(busy)
+            Button { requestCamera() } label: { Label(language.text("צילום תמונה", "Take photo"), systemImage: "camera.fill").font(.headline).frame(maxWidth: .infinity) }.buttonStyle(.borderedProminent).controlSize(.large).disabled(busy)
             Button(language.text("או בחרו תמונה קיימת", "Or choose an existing photo")) { picker = .library }.frame(minHeight: 44).disabled(busy)
             if !status.isEmpty { Text(status).font(.footnote).foregroundColor(.secondary) }
             Spacer()
@@ -213,11 +206,11 @@ struct ProfileView: View {
     var body: some View {
         Form {
             Text(language.text("הפרופיל מוצפן ונשמר רק במכשיר זה, ללא סנכרון. למחיקה מלאה השתמשו בכפתור המחיקה.", "Encrypted on this device only, not synced. Use Delete to remove both the profile and its Keychain key."))
-            TextField(language.text("שם פרטי", "First name"), text: $profile.first)
-            TextField(language.text("שם משפחה", "Last name"), text: $profile.last)
-            TextField(language.text("טלפון", "Phone"), text: $profile.phone).keyboardType(.phonePad)
-            TextField(language.text("תעודת זהות", "ID"), text: $profile.identifier).keyboardType(.numberPad)
-            TextField(language.text("דוא״ל", "Email"), text: $profile.email).keyboardType(.emailAddress).textInputAutocapitalization(.never)
+            TextField(language.text("שם פרטי", "First name"), text: $profile.first).disableAutocorrection(true).textContentType(nil)
+            TextField(language.text("שם משפחה", "Last name"), text: $profile.last).disableAutocorrection(true).textContentType(nil)
+            TextField(language.text("טלפון", "Phone"), text: $profile.phone).disableAutocorrection(true).textContentType(nil).keyboardType(.phonePad)
+            TextField(language.text("תעודת זהות", "ID"), text: $profile.identifier).disableAutocorrection(true).textContentType(nil).keyboardType(.numberPad)
+            TextField(language.text("דוא״ל", "Email"), text: $profile.email).disableAutocorrection(true).textContentType(nil).keyboardType(.emailAddress).textInputAutocapitalization(.never)
             Button(language.text("שמירה במכשיר", "Save locally")) { do { try store.save(profile); status = language.text("נשמר במכשיר.", "Saved on this device.") } catch { status = language.text("השמירה נכשלה. שום פרט לא נשלח.", "Could not save. No profile was sent.") } }.disabled(!canSave)
             Button(language.text("מחיקת הפרופיל", "Delete local profile"), role: .destructive) { do { try store.delete(); profile = ReporterProfile(); canSave = true; status = language.text("נמחק.", "Deleted.") } catch { status = language.text("מחיקת הפרופיל נכשלה.", "Could not delete the profile.") } }
             Text(status)

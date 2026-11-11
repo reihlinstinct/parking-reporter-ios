@@ -23,7 +23,15 @@ targets:
   ParkingReporterTests:
     type: bundle.unit-test
     platform: iOS
-    sources: [Tests]
+    sources:
+      - path: Tests
+        excludes: ['UI/**']
+    dependencies:
+      - target: ParkingReporter
+  ParkingReporterUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [Tests/UI]
     dependencies:
       - target: ParkingReporter
 schemes:
@@ -32,4 +40,4 @@ schemes:
       targets:
         ParkingReporter: all
     test:
-      targets: [ParkingReporterTests]
+      targets: [ParkingReporterTests, ParkingReporterUITests]
