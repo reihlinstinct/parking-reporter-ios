@@ -22,12 +22,13 @@
 | 27.x | Tahoe 26.6 ומעלה | 17 ומעלה | 17 ומעלה |
 | 26.4 עד 26.6 | Tahoe 26.2 ומעלה | 15 ומעלה | 15 ומעלה |
 | 26.0 עד 26.3 | Sequoia 15.6 ומעלה, או Tahoe | 15 ומעלה | 15 ומעלה |
-| 16.x | Sonoma 14.5 ומעלה (16.3 ו-16.4 דורשים Sequoia 15.2 ומעלה) | 15 ומעלה | 15 ומעלה |
+| 16.x | Sonoma 14.5 ומעלה (16.3 דורש Sequoia 15.2 ומעלה, 16.4 דורש Sequoia 15.3 ומעלה) | 15 ומעלה | 15 ומעלה |
 
 מקור: https://developer.apple.com/xcode/system-requirements/ (נבדק ב-11 בנובמבר 2026).
 
 - iPhone 6s (עד iOS 15): Xcode 26 או 16. לא Xcode 27.
 - iPhone 11 (iOS 15 ועד החדש ביותר): Xcode 26 או 16 עבור iOS 15 עד 26. עבור iOS 27 יש להשתמש ב-Xcode 27. אם Xcode 26 יכול לנפות שגיאות בטלפון שכבר על iOS 27 הוא לא מאומת, לכן התאם את Xcode לגרסת ה-iOS של הטלפון.
+- iPhone 11 תומך ב-iOS 27 לפי Apple: https://support.apple.com/guide/iphone/iphone-models-compatible-with-ios-27-iphe3fa5df43/ios . iPhone 6s נעצר ב-iOS 15: לא מאומת מול מקור של Apple.
 - התקנה אחת של Xcode 26 מכסה iOS 15 עד 26 בשני הטלפונים.
 
 ### שלבים: מכשיר עם Xcode
@@ -60,7 +61,7 @@ Window > Devices and Simulators > חבר בכבל > בחר את המכשיר > C
 
 מקור: https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components.md
 
-ב-CI לא רצים סימולטורים של iOS 15 עד 17, כי תמונות הרצה החינמיות לא כוללות אותם (ב-macos-14 היה iOS 17 והיא מתוכננת לפרישה ב-2 בנובמבר 2026). ראה [COMPATIBILITY.md](COMPATIBILITY.md).
+ב-CI לא רצים סימולטורים של iOS 15 עד 17, כי תמונות הרצה החינמיות לא כוללות אותם (ב-macos-14 היה iOS 17 והיא מתוכננת לפרישה ב-2 בנובמבר 2026, מקור: https://github.blog/changelog/2026-10-01-github-actions-macos-14-runner-image-retirement/). ראה [COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## English
 
@@ -82,12 +83,13 @@ Window > Devices and Simulators > חבר בכבל > בחר את המכשיר > C
 | 27.x | Tahoe 26.6 or later | 17 or later | 17 or later |
 | 26.4 to 26.6 | Tahoe 26.2 or later | 15 or later | 15 or later |
 | 26.0 to 26.3 | Sequoia 15.6 or later, or Tahoe | 15 or later | 15 or later |
-| 16.x | Sonoma 14.5 or later (16.3 and 16.4 need Sequoia 15.2 or later) | 15 or later | 15 or later |
+| 16.x | Sonoma 14.5 or later (16.3 needs Sequoia 15.2 or later, 16.4 needs Sequoia 15.3 or later) | 15 or later | 15 or later |
 
 Source: https://developer.apple.com/xcode/system-requirements/ (checked 11 Nov 2026).
 
 - iPhone 6s (up to iOS 15): use Xcode 26 or 16. Not Xcode 27.
 - iPhone 11 (iOS 15 up to the newest): Xcode 26 or 16 for iOS 15 to 26. For iOS 27 use Xcode 27. Whether Xcode 26 can debug a phone already on iOS 27 is unverified, so match Xcode to the phone's iOS.
+- iPhone 11 supports iOS 27 per Apple: https://support.apple.com/guide/iphone/iphone-models-compatible-with-ios-27-iphe3fa5df43/ios . iPhone 6s stopping at iOS 15 is unverified against an Apple source.
 - One Xcode 26 install covers iOS 15 to 26 for both phones.
 
 ### Steps: device with Xcode
@@ -120,4 +122,4 @@ Window > Devices and Simulators > connect by cable > select the device > Connect
 
 Source: https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components.md
 
-CI does not run iOS 15 to 17 simulators: the free runner images do not ship them (macos-14 had iOS 17 and is scheduled for retirement on 2 Nov 2026). See [COMPATIBILITY.md](COMPATIBILITY.md).
+CI does not run iOS 15 to 17 simulators: the free runner images do not ship them (macos-14 had iOS 17 and is scheduled for retirement on 2 Nov 2026, source: https://github.blog/changelog/2026-10-01-github-actions-macos-14-runner-image-retirement/). See [COMPATIBILITY.md](COMPATIBILITY.md).
