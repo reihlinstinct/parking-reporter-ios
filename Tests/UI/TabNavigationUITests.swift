@@ -35,3 +35,24 @@ final class TabNavigationUITests: XCTestCase {
         XCTAssertFalse(send.isEnabled)
     }
 }
+
+final class OnboardingUITests: XCTestCase {
+    func testWelcomeThenSetupThenLaterShowsTabs() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--preview-en", "--preview-onboarding"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["Welcome to Clear Sidewalks"].waitForExistence(timeout: 20))
+        app.buttons["Get started"].tap()
+        XCTAssertTrue(app.navigationBars["Basic setup"].waitForExistence(timeout: 10))
+        app.buttons["onboarding.save"].tap()
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS[c] 'international number'")).firstMatch.waitForExistence(timeout: 10))
+        app.buttons["onboarding.later"].tap()
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 10))
+    }
+    func testHebrewOnboardingIsRightToLeftCopy() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--preview-he", "--preview-onboarding"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["ברוכים הבאים למדרכות פנויות"].waitForExistence(timeout: 20))
+    }
+}

@@ -1,9 +1,16 @@
 import SwiftUI
 import UIKit
 
-enum ReviewLanguage: String { case hebrew = "he", english = "en"
+enum ReviewLanguage: String, CaseIterable, Identifiable { case hebrew = "he", english = "en", arabic = "ar", russian = "ru", amharic = "am"
+    var id: String { rawValue }
+    // Legacy two-language helper: Hebrew gets the Hebrew string, every other language the English one.
+    // New screens use Localizer keys, which carry all five languages.
     func text(_ hebrew: String, _ english: String) -> String { self == .hebrew ? hebrew : english }
-    var direction: LayoutDirection { self == .hebrew ? .rightToLeft : .leftToRight }
+    var isRightToLeft: Bool { self == .hebrew || self == .arabic }
+    var direction: LayoutDirection { isRightToLeft ? .rightToLeft : .leftToRight }
+    var nativeName: String {
+        switch self { case .hebrew: return "עברית"; case .english: return "English"; case .arabic: return "العربية"; case .russian: return "Русский"; case .amharic: return "አማርኛ" }
+    }
 }
 struct PlateRecognition: Equatable {
     let candidates: [String]
@@ -33,11 +40,13 @@ struct ReviewPreview {
 }
 
 extension ReviewLanguage {
-    // Preview flags win; otherwise follow the system language.
-    static func resolve(arguments: [String], preferred: [String]) -> ReviewLanguage {
-        if arguments.contains("--preview-en") { return .english }
-        if arguments.contains("--preview-he") { return .hebrew }
-        return preferred.first?.hasPrefix("he") == true ? .hebrew : .english
+    // Preview flags win, then the user's saved choice, then the system language.
+    static func resolve(arguments: [String], preferred: [String], saved: ReviewLanguage? = nil) -> ReviewLanguage {
+        for language in ReviewLanguage.allCases where arguments.contains("--preview-\(language.rawValue)") { return language }
+        if let saved = saved { return saved }
+        let code = preferred.first.map { String($0.prefix(2)) } ?? ""
+        if code == "iw" { return .hebrew }
+        return ReviewLanguage(rawValue: code) ?? .english
     }
 }
 

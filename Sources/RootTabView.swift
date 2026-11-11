@@ -1,23 +1,32 @@
 import SwiftUI
 
 struct RootTabView: View {
-    let language: ReviewLanguage
+    @StateObject private var settings = AppSettings()
+    private let arguments: [String]
     @State private var tab: Int
+    private var language: ReviewLanguage { settings.language(arguments: arguments, preferred: Locale.preferredLanguages) }
     init(arguments: [String] = ProcessInfo.processInfo.arguments) {
-        language = ReviewLanguage.resolve(arguments: arguments, preferred: Locale.preferredLanguages)
+        self.arguments = arguments
         _tab = State(initialValue: arguments.contains("--preview-history") ? 1 : arguments.contains("--preview-settings") ? 2 : 0)
     }
     var body: some View {
-        TabView(selection: $tab) {
-            ContentView()
-                .tabItem { Label(language.text("דיווח", "Report"), systemImage: "camera.fill") }.tag(0)
-            HistoryView(language: language)
-                .tabItem { Label(language.text("הדיווחים שלי", "My reports"), systemImage: "list.bullet.rectangle") }.tag(1)
-            SettingsView(language: language)
-                .tabItem { Label(language.text("הגדרות", "Settings"), systemImage: "gearshape") }.tag(2)
+        Group {
+            if settings.shouldShowOnboarding(arguments: arguments) {
+                OnboardingView(settings: settings, language: language) { settings.onboarded = true }
+            } else { tabs }
         }
         .accentColor(AppTheme.accent)
         .environment(\.layoutDirection, language.direction)
+    }
+    private var tabs: some View {
+        TabView(selection: $tab) {
+            ContentView(language: language).id(language)
+                .tabItem { Label(language.text("דיווח", "Report"), systemImage: "camera.fill") }.tag(0)
+            HistoryView(language: language)
+                .tabItem { Label(language.text("הדיווחים שלי", "My reports"), systemImage: "list.bullet.rectangle") }.tag(1)
+            SettingsView(language: language, settings: settings)
+                .tabItem { Label(language.text("הגדרות", "Settings"), systemImage: "gearshape") }.tag(2)
+        }
     }
 }
 
@@ -57,11 +66,37 @@ struct HistoryView: View {
     }
 }
 
+struct LanguageListView: View {
+    @ObservedObject var settings: AppSettings
+    let language: ReviewLanguage
+    var body: some View {
+        List {
+            Button { settings.savedLanguage = nil } label: {
+                HStack { Text(Localizer.shared.string("settings.language.system_default", language)); Spacer()
+                    if settings.savedLanguage == nil { Image(systemName: "checkmark") } }
+            }
+            ForEach(ReviewLanguage.allCases) { item in
+                Button { settings.savedLanguage = item } label: {
+                    HStack { Text(item.nativeName); Spacer()
+                        if settings.savedLanguage == item { Image(systemName: "checkmark") } }
+                }
+            }
+        }.foregroundColor(.primary)
+        .navigationTitle(Localizer.shared.string("settings.language.title", language)).navigationBarTitleDisplayMode(.inline)
+    }
+}
+
 struct SettingsView: View {
     let language: ReviewLanguage
+    @ObservedObject var settings: AppSettings
     var body: some View {
         NavigationView {
             Form {
+                Section {
+                    NavigationLink(destination: LanguageListView(settings: settings, language: language)) {
+                        Label(Localizer.shared.string("settings.language.title", language), systemImage: "globe")
+                    }
+                }
                 Section {
                     NavigationLink(destination: ProfileView(language: language)) {
                         Label(language.text("פרטי המדווח", "Reporter details"), systemImage: "person.crop.circle")

@@ -5,7 +5,7 @@ import AVFoundation
 @main struct ReporterApp: App {
     var body: some Scene { WindowGroup {
         if ProcessInfo.processInfo.arguments.contains("--preview-profile") {
-            let language: ReviewLanguage = ProcessInfo.processInfo.arguments.contains("--preview-he") ? .hebrew : .english
+            let language = ReviewLanguage.resolve(arguments: ProcessInfo.processInfo.arguments, preferred: Locale.preferredLanguages)
             NavigationView { ProfileView(language: language) }.environment(\.layoutDirection, language.direction)
         } else { RootTabView() }
     } }
@@ -30,10 +30,10 @@ struct ContentView: View {
     @State private var privacy = false
     private let accent = AppTheme.accent
     enum PickerKind: String, Identifiable { case camera, library; var id: String { rawValue } }
-    init() {
+    init(language: ReviewLanguage) {
         let args = ProcessInfo.processInfo.arguments
-        language = args.contains("--preview-en") ? .english : (Locale.preferredLanguages.first?.hasPrefix("he") == true || args.contains("--preview-he") ? .hebrew : .english)
-        let demo = args.contains("--preview-he") || args.contains("--preview-en")
+        self.language = language
+        let demo = ReviewLanguage.allCases.contains { args.contains("--preview-\($0.rawValue)") }
         let uncertain = args.contains("--preview-uncertain")
         _image = State(initialValue: demo ? ReviewPreview.image() : nil)
         _recognition = State(initialValue: PlateRecognition(candidates: demo && !uncertain ? ["1234567"] : [], confidence: demo && !uncertain ? 0.99 : 0))
