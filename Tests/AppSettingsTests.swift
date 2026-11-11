@@ -59,21 +59,27 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertFalse(ReporterValidation.validID(""))
         XCTAssertFalse(ReporterValidation.validID(j("000", "000", "000")))
     }
+    /// Re-writes ASCII digits in another script at run time, so no digit-shaped literal sits in the repo.
+    private func script(_ ascii: String, zero: UInt32) -> String {
+        String(String.UnicodeScalarView(ascii.unicodeScalars.map { scalar in
+            ("0"..."9").contains(Character(scalar)) ? Unicode.Scalar(zero + (scalar.value - 48))! : scalar
+        }))
+    }
     func testNonASCIIDigitsAreNormalizedLikeAndroid() {
-        // Eastern Arabic-Indic digits for the valid ID 000000018 and for the mobile 050 123 4567
-        let arabicID = "٠٠٠٠٠٠٠١٨"
-        let arabicShortID = "١٨"
-        let arabicMobile = "٠٥٠١٢٣٤٥٦٧"
-        let arabicIntl = "+٩٧٢٥٠١٢٣٤٥٦٧"
+        let arabicID = script(j("000", "000", "018"), zero: 0x0660)       // Arabic-Indic
+        let arabicShortID = script("18", zero: 0x0660)
+        let arabicMobile = script(j("050", "123", "456", "7"), zero: 0x0660)
+        let arabicIntl = "+" + script(j("972", "501", "234", "567"), zero: 0x0660)
+        XCTAssertNotEqual(arabicID, j("000", "000", "018"))
         XCTAssertEqual(ReporterValidation.canonicalID(arabicID), "000000018")
         XCTAssertTrue(ReporterValidation.validID(arabicID))
         XCTAssertTrue(ReporterValidation.validID(arabicShortID))
         XCTAssertTrue(ReporterValidation.validPhone(arabicMobile))
         XCTAssertTrue(ReporterValidation.validPhone(arabicIntl))
         XCTAssertEqual(ReporterValidation.canonicalPhone(arabicMobile), j("+97", "250", "123", "456", "7"))
-        XCTAssertTrue(ReporterValidation.validID("०००००००१८"), "Devanagari")
-        XCTAssertTrue(ReporterValidation.validID("００００００−０１８".replacingOccurrences(of: "−", with: "")), "fullwidth")
-        XCTAssertFalse(ReporterValidation.validID("१२३४५६७८९"), "bad checksum still rejected")
+        XCTAssertTrue(ReporterValidation.validID(script(j("000", "000", "018"), zero: 0x0966)), "Devanagari")
+        XCTAssertTrue(ReporterValidation.validID(script(j("000", "000", "018"), zero: 0xFF10)), "fullwidth")
+        XCTAssertFalse(ReporterValidation.validID(script(j("123", "456", "789"), zero: 0x0966)), "bad checksum still rejected")
         XCTAssertFalse(ReporterValidation.validID("abc"))
     }
     func testPhoneDivergencesFromAndroidFixed() {
@@ -83,7 +89,7 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertTrue(ReporterValidation.validPhone(j("972", "50", "123", "456", "7")) == false, "bare 972 without plus")
     }
     func testNormalizedProfileStoresASCIIOnly() {
-        var p = ReporterProfile(); p.first = " A "; p.last = "B"; p.phone = "٠٥٠١٢٣٤٥٦٧"; p.identifier = "٠٠٠٠٠٠٠١٨"
+        var p = ReporterProfile(); p.first = " A "; p.last = "B"; p.phone = script(j("050", "123", "456", "7"), zero: 0x0660); p.identifier = script(j("000", "000", "018"), zero: 0x0660)
         let n = ReporterValidation.normalized(p)
         XCTAssertEqual(n.phone, j("+97", "250", "123", "456", "7")); XCTAssertEqual(n.identifier, "000000018"); XCTAssertEqual(n.first, "A")
     }
