@@ -27,7 +27,7 @@ final class NativeShellTests: XCTestCase {
         XCTAssertEqual(groups.drafts.count, 1)
         XCTAssertEqual(groups.others.count, 2)
         XCTAssertTrue(groups.others[0].date > groups.others[1].date)
-        XCTAssertTrue(items.allSatisfy { !$0.address.isEmpty })
+        XCTAssertTrue(items.allSatisfy { !$0.addressEn.isEmpty && !$0.addressHe.isEmpty && $0.address(.hebrew) != $0.address(.english) })
     }
     func testEveryCategoryHasHebrewAndEnglishTitles() {
         for category in ReportCategory.allCases {

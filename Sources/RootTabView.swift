@@ -50,7 +50,7 @@ struct HistoryView: View {
     private func row(_ report: SavedReport) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(report.category.title(language)).font(.headline)
-            Text(report.address).font(.subheadline).foregroundColor(.secondary)
+            Text(report.address(language)).font(.subheadline).foregroundColor(.secondary)
             Text(ReportTimeFormat.string(from: report.date, timeZone: TimeZone(identifier: "UTC") ?? .current))
                 .font(.caption).foregroundColor(.secondary).environment(\.layoutDirection, .leftToRight)
         }.padding(.vertical, 4)

@@ -42,11 +42,11 @@ extension ReviewLanguage {
 }
 
 enum AppTheme {
-    // Navy from the municipal-style palette, lighter in dark mode for contrast.
+    // Android palette (Palette.kt): NAVY 0x2C537E, GOLD 0xD8A038, dark-mode primary 0xA3C9F5.
     static let accent = Color(UIColor { traits in
         traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0.55, green: 0.70, blue: 0.95, alpha: 1)
-            : UIColor(red: 0.07, green: 0.18, blue: 0.40, alpha: 1)
+            ? UIColor(red: 0xA3 / 255, green: 0xC9 / 255, blue: 0xF5 / 255, alpha: 1)
+            : UIColor(red: 0x2C / 255, green: 0x53 / 255, blue: 0x7E / 255, alpha: 1)
     })
 }
 

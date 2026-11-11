@@ -5,7 +5,9 @@ enum ReportState: String, Codable, Equatable { case draft, preview }
 struct SavedReport: Identifiable, Equatable {
     let id: String
     let category: ReportCategory
-    let address: String
+    let addressHe: String
+    let addressEn: String
+    func address(_ language: ReviewLanguage) -> String { language.text(addressHe, addressEn) }
     let date: Date
     let state: ReportState
 }
@@ -16,9 +18,9 @@ enum SampleReports {
         let base = DateComponents(calendar: Calendar(identifier: .gregorian), timeZone: TimeZone(identifier: "UTC"),
                                   year: 2026, month: 1, day: 1, hour: 12, minute: 0).date ?? Date(timeIntervalSince1970: 1_767_268_800)
         return [
-            SavedReport(id: "s1", category: .sidewalkParking, address: "Example St 12", date: base, state: .draft),
-            SavedReport(id: "s2", category: .brokenSign, address: "Sample Ave 5", date: base.addingTimeInterval(-86_400), state: .preview),
-            SavedReport(id: "s3", category: .fadedCrosswalk, address: "Test Rd 31", date: base.addingTimeInterval(-172_800), state: .preview),
+            SavedReport(id: "s1", category: .sidewalkParking, addressHe: "רחוב הדוגמה 12", addressEn: "Example St 12", date: base, state: .draft),
+            SavedReport(id: "s2", category: .brokenSign, addressHe: "שדרות הדגימה 5", addressEn: "Sample Ave 5", date: base.addingTimeInterval(-86_400), state: .preview),
+            SavedReport(id: "s3", category: .fadedCrosswalk, addressHe: "דרך הבדיקה 31", addressEn: "Test Rd 31", date: base.addingTimeInterval(-172_800), state: .preview),
         ]
     }
     static func grouped(_ items: [SavedReport]) -> (drafts: [SavedReport], others: [SavedReport]) {
