@@ -3,8 +3,11 @@ import Security
 @testable import ParkingReporter
 
 final class ProfileStoreTests: XCTestCase {
-    func testSaveLoadDeleteOnDeviceKeychain() throws {
-        let store = ProfileStore()
+    func testSaveLoadDeleteWithIsolatedStore() throws {
+        // Isolated names: this app-hosted test must never touch a developer's real profile.
+        let id = UUID().uuidString
+        let store = ProfileStore(service: "org.sidewalks.ParkingReporter.tests.roundtrip.\(id)",
+                                 account: "roundtrip-\(id)", filename: "roundtrip-\(id).bin")
         try store.delete()
         defer { try? store.delete() }
         let profile = ReporterProfile(first: "Synthetic", last: "Only", phone: "000", identifier: "000", email: "test@example.invalid")
@@ -146,5 +149,14 @@ final class ProfileStoreSecurityTests: XCTestCase {
         XCTAssertEqual(attrs[.protectionKey] as? FileProtectionType, .complete,
                        "profile file must use complete file protection")
         #endif
+    }
+}
+
+final class ProfileStoreIsolationTests: XCTestCase {
+    func testTestNamespacesDifferFromProduction() {
+        XCTAssertNotEqual("org.sidewalks.ParkingReporter.tests", ProfileStore.productionService)
+        XCTAssertNotEqual("security-tests-v1", ProfileStore.productionAccount)
+        XCTAssertNotEqual("security-tests-v1.bin", ProfileStore.productionFilename)
+        XCTAssertTrue(ProfileStore.productionService.hasSuffix(".profile"))
     }
 }

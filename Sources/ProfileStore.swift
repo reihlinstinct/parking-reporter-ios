@@ -19,9 +19,13 @@ struct ProfileStore {
 
     // Injectable service/account/filename let security regression tests run
     // against isolated Keychain items and files; production keeps the defaults.
-    init(service: String = "org.sidewalks.ParkingReporter.profile",
-         account: String = "profile-aes-gcm-v1",
-         filename: String = "reporter-profile-v1.bin") {
+    static let productionService = "org.sidewalks.ParkingReporter.profile"
+    static let productionAccount = "profile-aes-gcm-v1"
+    static let productionFilename = "reporter-profile-v1.bin"
+
+    init(service: String = ProfileStore.productionService,
+         account: String = ProfileStore.productionAccount,
+         filename: String = ProfileStore.productionFilename) {
         self.service = service
         self.account = account
         self.filename = filename
