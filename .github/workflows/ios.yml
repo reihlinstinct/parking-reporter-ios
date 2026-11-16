@@ -4,7 +4,7 @@ permissions:
   contents: read
 concurrency:
   group: ios-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   preview:
     if: github.event.repository.private == false
