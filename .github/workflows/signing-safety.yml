@@ -1,0 +1,79 @@
+name: Signing workflow safety
+on:
+  pull_request:
+    paths: ['.github/workflows/manual-gpg-signing.yml', '.github/workflows/signing-safety.yml']
+  schedule:
+    # Weekly full suite: Sunday 06:00 Israel winter time (04:00 UTC;
+    # runs 07:00 IDT in summer).
+    - cron: '0 4 * * 0'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Validate manual signing boundary without secrets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          s=Path('.github/workflows/manual-gpg-signing.yml').read_text()
+          assert '  workflow_dispatch:' in s
+          assert '  push:' not in s and '  pull_request:' not in s
+          assert "github.actor == github.repository_owner" in s
+          assert "github.ref == 'refs/heads/main'" in s
+          assert 'git checkout --orphan "$branch"' in s
+          assert 'git commit --allow-empty' in s
+          assert 'git verify-commit HEAD' in s
+          assert 'test -z "$(git ls-tree --name-only HEAD)"' in s
+          assert 'git push origin "HEAD:refs/heads/$branch"' in s
+          assert 'branch="gpg-signing-test/' in s
+          assert 'git merge' not in s and '--force' not in s
+          assert 'git config user.email "$email"' in s
+          start=s.index('        run: |')+len('        run: |\n')
+          end=s.index('      - name: Remove signing material',start)
+          script='\n'.join(x[10:] for x in s[start:end].splitlines())
+          subprocess.run(['bash','-n'],input=script,text=True,check=True)
+          print('Owner-only manual isolated empty signing boundary passed')
+          PY
+
+  summary:
+    permissions:
+      contents: read
+    name: Run summary
+    if: always()
+    needs: [validate]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Write run summary
+        if: always()
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/ci/run_summary.py
+      - name: Fail on failed or cancelled dependencies
+        if: always()
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          # Deliberate docs-only skips are allowed; a failed or cancelled
+          # dependency must fail this gate.
+          python3 - <<'PY'
+          import json, os, sys
+          needs = json.loads(os.environ["NEEDS_JSON"])
+          bad = {k: v["result"] for k, v in needs.items() if v["result"] not in ("success", "skipped")}
+          if bad:
+              print("Dependencies failed or cancelled:", bad)
+              sys.exit(1)
+          print("All dependencies succeeded or were deliberately skipped.")
+          PY

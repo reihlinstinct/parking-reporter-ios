@@ -1,0 +1,12 @@
+.DS_Store
+.build/
+build/
+DerivedData/
+*.xcodeproj/
+*.xcuserstate
+xcuserdata/
+vendor/
+interop/generated/
+
+interop/classpath.txt
+__pycache__/

@@ -1,0 +1,20 @@
+load("@build_bazel_rules_apple//apple/testing/default_runner:ios_xctestrun_runner.bzl", "ios_xctestrun_runner")
+load("@build_bazel_rules_apple//apple:ios.bzl", "ios_unit_test")
+objc_library(
+    name = "tests",
+    testonly = True,
+    srcs = ["InteropTests.m"],
+    data = glob(["generated/*.bin"]),
+    sdk_frameworks = ["XCTest"],
+    deps = ["//Tink:testonly"],
+)
+ios_xctestrun_runner(
+    name = "native_runner",
+)
+ios_unit_test(
+    runner = ":native_runner",
+    name = "interop_test",
+    minimum_os_version = "15.0",
+    deps = [":tests"],
+    resources = glob(["generated/*.bin"]),
+)

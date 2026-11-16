@@ -1,0 +1,10 @@
+{
+  "mappings": [
+    {
+      "pattern": ".github/workflows/manual-gpg-signing.yml",
+      "checks": [
+        "validate"
+      ]
+    }
+  ]
+}
